@@ -12,7 +12,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT imGuiHandled = ImGui_ImplWin32_WndProcHandler(m_hWnd, uMsg, wParam, lParam);
-	if (imGuiHandled == true)
+	if (imGuiHandled)
 	{
 		return 0;
 	}
@@ -51,7 +51,7 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 				InputMouseLeftButtonUp(wParam, lParam);
 			}
-
+			
 			return 0;
 		}
 
@@ -128,7 +128,7 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		//NOTE : 창 모서리를 끌어 연장시킨 경우를 처리함
 		case WM_EXITSIZEMOVE:
 		{
-			ResetScreenSetting();
+			m_needResetScreenResolution = true;
 
 			m_isResizing = false;
 			TimersStart();
@@ -144,7 +144,21 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 				return 0;
 			}
 
-			ResetScreenSetting();
+			m_needResetScreenResolution = true;
+
+			return 0;
+		}
+
+		case WM_DISPLAYCHANGE:
+		{
+			m_needResetScreenMode = true;
+
+			return 0;
+		}
+
+		case WM_MOVE:
+		{
+			m_needResetAdapterAndOutput = true;
 
 			return 0;
 		}
@@ -153,18 +167,18 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			if (LOWORD(wParam) == WA_INACTIVE)
 			{
-				m_isInActive = true;
+				m_isInactive = true;
 				TimersStop();
 			}
 			else
 			{
-				m_isInActive = false;
+				m_isInactive = false;
 				TimersStart();
 			}
 
 			return 0;
 		}
-
+		
 		//NOTE : ALT+F4 혹은 우상단 창닫기 버튼을 이용한 종료를 처리함
 		case WM_CLOSE:
 		{

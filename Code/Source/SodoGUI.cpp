@@ -3,7 +3,7 @@
 #include "Sodo.h"
 #include "Game.h"
 
-void Sodo::RenderGuiInGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUIInGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImVec2 pos = ImVec2(
 		imGuiViewPort->Pos.x,
@@ -31,7 +31,7 @@ void Sodo::RenderGuiInGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 	ImGui::End();
 }
 
-void Sodo::RenderGuiLobbyMenu(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUILobbyMenu(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 	ImGui::SetNextWindowSize(ImVec2(250.0f, 330.0f), ImGuiCond_Always);
@@ -63,13 +63,13 @@ void Sodo::RenderGuiLobbyMenu(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPo
 	bool exitButtonClicked = ImGui::Button("Exit", m_imGuiSmallButtonSize);
 	if (exitButtonClicked == true)
 	{
-		m_gameState = GAME_STATE_CHECK_EXIT_FROM_LOBBY_TO_WINDOWS;
+		m_gameState = GAME_STATE_EXIT_FROM_LOBBY_TO_WINDOWS;
 	}
 
 	ImGui::End();
 }
 
-void Sodo::RenderGuiPausedMenu(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUIPausedMenu(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 	ImGui::SetNextWindowSize(ImVec2(300.0f, 430.0f), ImGuiCond_Always);
@@ -101,7 +101,7 @@ void Sodo::RenderGuiPausedMenu(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterP
 	bool exitToLobbyButtonClicked = ImGui::Button("Exit to lobby", m_imGuiMediumButtonSize);
 	if (exitToLobbyButtonClicked == true)
 	{
-		m_gameState = GAME_STATE_CHECK_EXIT_FROM_PAUSED_TO_LOBBY;
+		m_gameState = GAME_STATE_EXIT_FROM_PAUSED_TO_LOBBY;
 	}
 
 	ImGui::Dummy(m_imGuiSpacingSize);
@@ -111,13 +111,13 @@ void Sodo::RenderGuiPausedMenu(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterP
 	bool exitToWindowButtonClicked = ImGui::Button("Exit to window", m_imGuiMediumButtonSize);
 	if (exitToWindowButtonClicked == true)
 	{
-		m_gameState = GAME_STATE_CHECK_EXIT_FROM_PAUSED_TO_WINDOWS;
+		m_gameState = GAME_STATE_EXIT_FROM_PAUSED_TO_WINDOWS;
 	}
 
 	ImGui::End();
 }
 
-void Sodo::RenderGuiLoadingToGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUILoadingToGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGuiWindowFlags loadingGuiFlag = m_imGuiBasicFlag | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground;
 
@@ -142,7 +142,7 @@ void Sodo::RenderGuiLoadingToGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCent
 	ImGui::End();
 }
 
-void Sodo::RenderGuiLoadingToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUILoadingToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGuiWindowFlags loadingGuiFlag = m_imGuiBasicFlag | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground;
 
@@ -167,7 +167,7 @@ void Sodo::RenderGuiLoadingToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCen
 	ImGui::End();
 }
 
-void Sodo::RenderGuiOptionFromLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUIOptionFromLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 	ImGui::SetNextWindowSize(ImVec2(700.0f, 770.0f), ImGuiCond_Always);
@@ -177,17 +177,17 @@ void Sodo::RenderGuiOptionFromLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCe
 	bool backButtonClicked = ImGui::Button("Back", m_imGuiSmallButtonSize);
 	if (backButtonClicked == true)
 	{
-		SaveOptions();
+		OptionSave();
 
 		m_gameState = GAME_STATE_LOBBY;
 	}
 
-	RenderGuiOptionCommon();
+	GUIOptionCommon();
 
 	ImGui::End();
 }
 
-void Sodo::RenderGuiOptionFromPaused(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUIOptionFromPaused(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 	ImGui::SetNextWindowSize(ImVec2(700.0f, 750.0f), ImGuiCond_Always);
@@ -197,17 +197,17 @@ void Sodo::RenderGuiOptionFromPaused(ImGuiViewport* imGuiViewPort, ImVec2 imGuiC
 	bool backButtonClicked = ImGui::Button("Back", m_imGuiSmallButtonSize);
 	if (backButtonClicked == true)
 	{
-		SaveOptions();
+		OptionSave();
 
 		m_gameState = GAME_STATE_PAUSED;
 	}
 
-	RenderGuiOptionCommon();
+	GUIOptionCommon();
 
 	ImGui::End();
 }
 
-void Sodo::RenderGuiCheckExitFromLobbyToWindows(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUIExitFromLobbyToWindows(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 	ImGui::SetNextWindowSize(ImVec2(600.0f, 200.0f), ImGuiCond_Always);
@@ -218,12 +218,12 @@ void Sodo::RenderGuiCheckExitFromLobbyToWindows(ImGuiViewport* imGuiViewPort, Im
 
 	ImGui::Text("Do you really want to exit to window?");
 
-	RenderGuiCheckExitCommon(GAME_STATE_LOBBY, GAME_STATE_TERMINATE);
+	GUIExitCommon(GAME_STATE_LOBBY, GAME_STATE_TERMINATE);
 
 	ImGui::End();
 }
 
-void Sodo::RenderGuiCheckExitFromPausedToWindows(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUIExitFromPausedToWindows(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 	ImGui::SetNextWindowSize(ImVec2(600.0f, 200.0f), ImGuiCond_Always);
@@ -234,12 +234,12 @@ void Sodo::RenderGuiCheckExitFromPausedToWindows(ImGuiViewport* imGuiViewPort, I
 
 	ImGui::Text("Do you really want to exit to window?");
 
-	RenderGuiCheckExitCommon(GAME_STATE_PAUSED, GAME_STATE_TERMINATE);
+	GUIExitCommon(GAME_STATE_PAUSED, GAME_STATE_TERMINATE);
 
 	ImGui::End();
 }
 
-void Sodo::RenderGuiCheckExitFromPausedToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUIExitFromPausedToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 	ImGui::SetNextWindowSize(ImVec2(600.0f, 200.0f), ImGuiCond_Always);
@@ -250,12 +250,12 @@ void Sodo::RenderGuiCheckExitFromPausedToLobby(ImGuiViewport* imGuiViewPort, ImV
 
 	ImGui::Text("Do you really want to exit to lobby?");
 
-	RenderGuiCheckExitCommon(GAME_STATE_PAUSED, GAME_STATE_LOADING_TO_LOBBY);
+	GUIExitCommon(GAME_STATE_PAUSED, GAME_STATE_LOADING_TO_LOBBY);
 
 	ImGui::End();
 }
 
-void Sodo::RenderGuiOptionCommon()
+void Sodo::GUIOptionCommon()
 {
 	bool previousFullScreenState = m_optionFullScreen.IsActive();
 	bool previousHDRState = m_optionHDR.IsActive();
@@ -306,7 +306,7 @@ void Sodo::RenderGuiOptionCommon()
 	}
 }
 
-void Sodo::RenderGuiCheckExitCommon(GameState from, GameState to)
+void Sodo::GUIExitCommon(GameState from, GameState to)
 {
 	ImGui::Dummy(m_imGuiSpacingSize);
 

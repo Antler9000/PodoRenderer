@@ -11,13 +11,8 @@
 #include <dxgi1_2.h>
 #include <dxgi.h>
 #include <dxgicommon.h>
-#include <dxgitype.h>
 #include <wrl/client.h>
-#include <algorithm>
-#include <vector>
 #include <string>
-#include <cstdio>
-#include <cstdlib>
 #include <stdexcept>
 #include "imgui.h"
 #include "imgui_impl_win32.h"
@@ -50,112 +45,33 @@ void Sodo::InitFactory()
 	m_optionTearing.featureSupported = tearingQuery;
 }
 
-void Sodo::InitAdapter()
+void Sodo::InitAdapterAndOutput()
 {
-	ThrowIfFailed(
-		m_dxgiFactory->EnumAdapterByGpuPreference(
-			0,
+	m_dxgiAdapter.Reset();
+
+	ComPtr<IDXGIAdapter3> tempAdapter = nullptr;
+
+	HRESULT result = S_OK;
+	for (UINT i = 0; result != DXGI_ERROR_NOT_FOUND; i++)
+	{
+		result = m_dxgiFactory->EnumAdapterByGpuPreference(
+			i,
 			DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
-			IID_PPV_ARGS(m_dxgiAdapter.ReleaseAndGetAddressOf())
-		)
-	);
+			IID_PPV_ARGS(tempAdapter.ReleaseAndGetAddressOf())
+		);
 
-#ifdef _DEBUG
-	DXGI_ADAPTER_DESC adapterDesc;
-	m_dxgiAdapter->GetDesc(&adapterDesc);
-
-	wstring adapterText = L"[SODO DEBUG] 어댑터 : ";
-	adapterText += adapterDesc.Description;
-	adapterText += L"\n";
-
-	OutputDebugStringW(adapterText.c_str());
-#endif
-}
-
-void Sodo::InitOutput()
-{
-	m_dxgiOutput.Reset();
-	m_dxgiOutput6.Reset();
-
-	ThrowIfFailed(m_dxgiAdapter->EnumOutputs(0, m_dxgiOutput.ReleaseAndGetAddressOf()));
-
-	m_optionHDR.outputSupported = SUCCEEDED(m_dxgiOutput.As(&m_dxgiOutput6));
-
-	if (m_optionHDR.outputSupported == true)
-	{
-		m_dxgiOutput6->GetDesc1(&m_dxgiOutputDesc);
-	}
-
-#ifdef _DEBUG
-	DXGI_OUTPUT_DESC outputDesc;
-	m_dxgiOutput->GetDesc(&outputDesc);
-
-	wstring outputText = L"[SODO DEBUG] 아웃풋 : ";
-	outputText += outputDesc.DeviceName;
-	outputText += L"\n";
-
-	OutputDebugStringW(outputText.c_str());
-#endif
-}
-
-void Sodo::InitDisplayMode()
-{
-	UINT modeCount = 0;
-	ThrowIfFailed(m_dxgiOutput->GetDisplayModeList(m_screenBackBufferFormatSDR, 0, &modeCount, nullptr));
-
-	if (modeCount <= 0)
-	{
-		throw std::runtime_error("there is no supported display mode");
-	}
-
-	std::vector<DXGI_MODE_DESC> modeList(modeCount);
-	ThrowIfFailed(m_dxgiOutput->GetDisplayModeList(m_screenBackBufferFormatSDR, 0, &modeCount, &modeList[0]));
-
-	m_dxgiDisplayModeDesc = *std::max_element(
-		modeList.begin(),
-		modeList.end(),
-		[](const DXGI_MODE_DESC& lhs, const DXGI_MODE_DESC& rhs)
+		if (SUCCEEDED(result) == true)
 		{
-			UINT lhsArea = lhs.Width * lhs.Height;
-			UINT rhsArea = rhs.Width * rhs.Height;
-			if (lhsArea != rhsArea)
+			if (FindOutputForAdapter(tempAdapter.Get()) == true)
 			{
-				return lhsArea < rhsArea;
-			}
+				m_dxgiAdapter = tempAdapter;
 
-			if (lhs.RefreshRate.Denominator == 0)
-			{
-				return true;
+				return;
 			}
-
-			if (rhs.RefreshRate.Denominator == 0)
-			{
-				return false;
-			}
-
-			float lhsRefreshRate = float(lhs.RefreshRate.Numerator) / lhs.RefreshRate.Denominator;
-			float rhsRefreshRate = float(rhs.RefreshRate.Numerator) / rhs.RefreshRate.Denominator;
-			return lhsRefreshRate < rhsRefreshRate;
 		}
-	);
+	}
 
-#ifdef _DEBUG
-	UINT refreshRateNumerator = m_dxgiDisplayModeDesc.RefreshRate.Numerator;
-	UINT refreshRateDenominator = m_dxgiDisplayModeDesc.RefreshRate.Denominator;
-
-	wchar_t displayInfoBuffer[124] = { };
-	swprintf(
-		displayInfoBuffer,
-		_countof(displayInfoBuffer),
-		L"[SODO DEBUG] 디스플레이 : %u x %u (%u/%u hz)\n",
-		m_dxgiDisplayModeDesc.Width,
-		m_dxgiDisplayModeDesc.Height,
-		refreshRateNumerator,
-		refreshRateDenominator
-	);
-
-	OutputDebugStringW(displayInfoBuffer);
-#endif
+	throw std::runtime_error("there is no suitable adapter");
 }
 
 void Sodo::InitDevice()
@@ -178,12 +94,15 @@ void Sodo::InitDevice()
 	m_optionMeshShader.deviceSupported = SUCCEEDED(m_device.As(&m_device2));
 	m_optionRayTracing.deviceSupported = SUCCEEDED(m_device.As(&m_device5));
 
+	m_optionMeshShader.featureSupported = false;
 	if (m_optionMeshShader.deviceSupported == true)
 	{	
 		D3D12_FEATURE_DATA_D3D12_OPTIONS7 meshShaderFeatureQuery = {};
 		m_device2->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS7, &meshShaderFeatureQuery, sizeof(meshShaderFeatureQuery));
 		m_optionMeshShader.featureSupported = (meshShaderFeatureQuery.MeshShaderTier != D3D12_MESH_SHADER_TIER_NOT_SUPPORTED);
 	}
+
+	m_optionRayTracing.featureSupported = false;
 	if (m_optionRayTracing.deviceSupported == true)
 	{
 		D3D12_FEATURE_DATA_D3D12_OPTIONS5 rayTracingFeatureQuery = {};
@@ -292,6 +211,10 @@ void Sodo::InitFormatSupport()
 	{
 		m_optionHDR.formatSupported = ((backBufferFormatHDRQuery.Support1 & D3D12_FORMAT_SUPPORT1_RENDER_TARGET) != 0);
 	}
+	else
+	{
+		m_optionHDR.formatSupported = false;
+	}
 	ThrowIfFalse(depthStencilFormatQuery.Support1 & D3D12_FORMAT_SUPPORT1_DEPTH_STENCIL);
 }
 
@@ -331,6 +254,8 @@ void Sodo::InitHDRSwapChainSupport()
 
 	ThrowIfFailed((tempSwapChain.As(&tempSwapChain3)));
 
+	m_optionHDR.colorSpaceSupported = false;
+
 	UINT colorSpaceHDRQuery = 0;
 	HRESULT queryResult = tempSwapChain3->CheckColorSpaceSupport(m_screenBackBufferColorSpaceHDR, &colorSpaceHDRQuery);
 	if (SUCCEEDED(queryResult) == true)
@@ -341,7 +266,7 @@ void Sodo::InitHDRSwapChainSupport()
 
 void Sodo::InitSavedOptions()
 {
-	RestoreOptions();
+	OptionRestore();
 
 	if (m_optionFullScreen.IsSupported() == false)
 	{
@@ -373,11 +298,11 @@ void Sodo::InitScreenMode()
 {
 	if (m_optionFullScreen.IsActive() == true)
 	{
-		SetFullScreenMode();
+		ResetToFullScreenMode();
 	}
 	else
 	{
-		SetWindowMode();
+		ResetToWindowMode();
 	}
 }
 
@@ -436,7 +361,7 @@ void Sodo::InitBackBuffers()
 
 	m_screenBackBufferIndex = m_screenSwapChain->GetCurrentBackBufferIndex();
 
-	for (int i = 0; i < m_screenBackBufferCount; i++)
+	for (UINT i = 0; i < m_screenBackBufferCount; i++)
 	{
 		ThrowIfFailed(m_screenSwapChain->GetBuffer(i, IID_PPV_ARGS(m_screenBackBuffers[i].ReleaseAndGetAddressOf())));
 	}
@@ -563,7 +488,7 @@ void Sodo::InitDescriptorHeapCBVSRVUAV()
 void Sodo::InitRTV()
 {
 	CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandleRTV = m_descriptorHeapRTVCpuStartHandle;
-	for (int i = 0; i < m_screenBackBufferCount; i++)
+	for (UINT i = 0; i < m_screenBackBufferCount; i++)
 	{
 		m_device->CreateRenderTargetView(m_screenBackBuffers[i].Get(), nullptr, cpuHandleRTV.Offset(i, m_descriptorHeapRTVIncrementSize));
 	}

@@ -6,7 +6,6 @@
 #include <dxgi1_4.h>
 #include <dxgi.h>
 #include <dxgicommon.h>
-#include <dxgitype.h>
 #include <dxgiformat.h>
 #include <wrl/client.h>
 #include <string>
@@ -20,9 +19,6 @@
 
 class Sodo : public BaseApp<Sodo>
 {
-	//NOTE : 부모 클래스의 WindowProcedure 정적 메소드에서 본 자식 클래스의 HandleMessage를 직접 호출할 수 있도록 친구 선언을 해줌
-	friend BaseApp<Sodo>;
-
 public:
 
 	Sodo() : BaseApp(L"Sodo Video Game")
@@ -32,7 +28,7 @@ public:
 
 	~Sodo()
 	{
-		WaitAllCommandDone();
+		ResetQueuedCommands();
 
 		CloseFenceEvent();
 		CloseImGui();
@@ -41,9 +37,7 @@ public:
 	void InitApp()
 	{
 		InitFactory();
-		InitAdapter();
-		InitOutput();
-		InitDisplayMode();
+		InitAdapterAndOutput();
 		InitDevice();
 		InitFence();
 		InitFenceEvent();
@@ -87,9 +81,13 @@ public:
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
 			}
-			else if (NeedResetScreenSetting() == true)
+			else if (NeedResetDxgiInterfaces() == true)
 			{
-				ResetScreenSetting();
+				ResetDxgiInterfaces();
+			}
+			else if (NeedResetScreenSettings() == true)
+			{
+				ResetScreenSettings();
 			}
 			else
 			{
@@ -102,7 +100,7 @@ public:
 					UpdateTimers();
 					UpdateCaption();
 					UpdateImGui();
-					UpdateSreen();
+					UpdateScreen();
 				}
 			}
 		}
@@ -110,17 +108,16 @@ public:
 		return (int)msg.wParam;
 	}
 
+	//NOTE : 이 메소드는 BaseApp에 작석된 WindowProcedure 정적 메소드에서 호출함
+	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
+
 private:
 
 	void CloseFenceEvent();
 	void CloseImGui();
 
-	void InitSavedOptions();
-	void InitScreenMode();
 	void InitFactory();
-	void InitAdapter();
-	void InitOutput();
-	void InitDisplayMode();
+	void InitAdapterAndOutput();
 	void InitDevice();
 	void InitFence();
 	void InitFenceEvent();
@@ -129,6 +126,8 @@ private:
 	void InitCommandList();
 	void InitFormatSupport();
 	void InitHDRSwapChainSupport();
+	void InitSavedOptions();
+	void InitScreenMode();
 	void InitSwapChain();
 	void InitBackBuffers();
 	void InitViewPort();
@@ -146,10 +145,8 @@ private:
 	void UpdateTimers();
 	void UpdateCaption();
 	void UpdateImGui();
-	void UpdateSreen();
+	void UpdateScreen();
 
-	//NOTE : 이 메소드는 BaseApp에 작석된 WindowProcedure 정적 메소드에서 호출함
-	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	void InputMouseMove(WPARAM wParam, LPARAM lParam);
 	void InputMouseLeftButtonDown(WPARAM wParam, LPARAM lParam);
 	void InputMouseLeftButtonUp(WPARAM wParam, LPARAM lParam);
@@ -162,31 +159,36 @@ private:
 
 private:
 
-	void WaitAllCommandDone();
-	void ResetScreenSetting();
-	void SetFullScreenMode();
-	void SetWindowMode();
-	void SaveOptions();
-	void RestoreOptions();
-	bool ReadOptionBool(std::ifstream& fin, std::string optionName, bool& outOptionEnabled);
-	bool ReadOptionInt(std::ifstream& fin, std::string optionName, int& outOptionEnabled);
+	bool FindOutputForAdapter(IDXGIAdapter3* tempAdapter);
 
-	void RenderGuiInGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void RenderGuiLobbyMenu(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void RenderGuiPausedMenu(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void RenderGuiLoadingToGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void RenderGuiLoadingToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void RenderGuiOptionFromLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void RenderGuiOptionFromPaused(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void RenderGuiCheckExitFromLobbyToWindows(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void RenderGuiCheckExitFromPausedToWindows(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void RenderGuiCheckExitFromPausedToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void RenderGuiOptionCommon();
-	void RenderGuiCheckExitCommon(GameState from, GameState to);
+	void ResetQueuedCommands();
+	void ResetDxgiInterfaces();
+	void ResetOutputSupport();
+	void ResetScreenSettings();
+	void ResetToFullScreenMode();
+	void ResetToWindowMode();
+
+	void OptionSave();
+	void OptionRestore();
+	bool OptionReadBool(std::ifstream& fin, std::string optionName, bool& outOptionEnabled);
+	bool OptionReadInt(std::ifstream& fin, std::string optionName, int& outOptionValue);
+
+	void GUIInGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUILobbyMenu(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUIPausedMenu(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUILoadingToGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUILoadingToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUIOptionFromLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUIOptionFromPaused(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUIExitFromLobbyToWindows(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUIExitFromPausedToWindows(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUIExitFromPausedToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUIOptionCommon();
+	void GUIExitCommon(GameState from, GameState to);
 
 public:
 
-	//NOTE : ImGui의 버튼, 체크 박스 등이 수정할 수 있어야 하므로 static으로 둠
+	//NOTE : ImGui의 버튼, 체크박스 등이 수정할 수 있어야 하므로 static으로 둠
 	static inline OptionFullScreen				m_optionFullScreen;
 	static inline OptionHDR						m_optionHDR;
 	static inline OptionTearing					m_optionTearing;
@@ -198,6 +200,7 @@ public:
 	static inline ImGuiDescriptorHeapAllocator	m_imGuiDescriptorHeapAllocator		= {};
 
 private:
+
 	static constexpr UINT						m_screenBackBufferCount				= 2;
 	static constexpr DXGI_FORMAT				m_screenBackBufferFormatSDR			= DXGI_FORMAT_R8G8B8A8_UNORM;
 	static constexpr DXGI_FORMAT				m_screenBackBufferFormatHDR			= DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -226,7 +229,6 @@ private:
 	ComPtr<IDXGIOutput>					m_dxgiOutput;
 	ComPtr<IDXGIOutput6>				m_dxgiOutput6;													//NOTE : (옵션) HDR 모니터 정보 획득
 	DXGI_OUTPUT_DESC1					m_dxgiOutputDesc									= {};		//NOTE : (옵션) HDR 모니터 정보 획득
-	DXGI_MODE_DESC						m_dxgiDisplayModeDesc								= {};
 	
 	ComPtr<ID3D12Device>				m_device;
 	ComPtr<ID3D12Device2>				m_device2;														//NOTE : (옵션) 메시 셰이더
@@ -268,6 +270,8 @@ private:
 	CD3DX12_CPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSCpuStartHandleForGame;
 	CD3DX12_GPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSGpuStartHandleForGame;
 	
+	bool		m_imGuiInitialized					= false;
+
 	void		TimersReset()						{ m_timerTotal.Reset(); m_timerCaption.Reset(); m_timerFrame.Reset(); }
 	void		TimersStop()						{ if (IsStopped() == true) { m_timerTotal.Stop(); m_timerCaption.Stop(); m_timerFrame.Stop(); } }
 	void		TimersStart()						{ if (IsStopped() == false) { m_timerTotal.Start(); m_timerCaption.Start(); m_timerFrame.Start(); } }
@@ -275,11 +279,14 @@ private:
 	Timer		m_timerCaption;
 	Timer		m_timerFrame;
 	
-	bool		IsStopped()	const					{ return m_isResizing || m_isInActive; }
+	bool		IsStopped()	const					{ return m_isResizing || m_isInactive; }
 	bool		m_isResizing						= false;
-	bool		m_isInActive						= false;
+	bool		m_isInactive						= false;
 
-	bool		NeedResetScreenSetting() const		{ return m_needResetScreenMode || m_needResetHDR; }
+	bool		NeedResetDxgiInterfaces() const		{ return (m_dxgiFactory->IsCurrent() == FALSE) || m_needResetAdapterAndOutput; }
+	bool		m_needResetAdapterAndOutput			= false;
+	bool		NeedResetScreenSettings() const		{ return m_needResetScreenResolution || m_needResetScreenMode || m_needResetHDR; }
+	bool		m_needResetScreenResolution			= false;
 	bool		m_needResetScreenMode				= false;
 	bool		m_needResetHDR						= false;
 
@@ -289,6 +296,4 @@ private:
 	int			m_inputScrollDelta					= 0;
 
 	GameState	m_gameState							= GAME_STATE_LOBBY;
-
-	bool		m_imGuiInitialized					= false;
 };

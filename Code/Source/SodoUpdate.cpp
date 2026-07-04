@@ -69,79 +69,79 @@ void Sodo::UpdateImGui()
 	{
 		case GAME_STATE_IN_GAME:
 		{
-			RenderGuiInGame(imGuiViewPort, imGuiCenterPos);
+			GUIInGame(imGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
 
 		case GAME_STATE_LOBBY:
 		{
-			RenderGuiLobbyMenu(imGuiViewPort, imGuiCenterPos);
+			GUILobbyMenu(imGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
 
 		case GAME_STATE_PAUSED:
 		{
-			RenderGuiPausedMenu(imGuiViewPort, imGuiCenterPos);
+			GUIPausedMenu(imGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
 
 		case GAME_STATE_LOADING_TO_GAME:
 		{
-			RenderGuiLoadingToGame(imGuiViewPort, imGuiCenterPos);
+			GUILoadingToGame(imGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
 
 		case GAME_STATE_LOADING_TO_LOBBY:
 		{
-			RenderGuiLoadingToLobby(imGuiViewPort, imGuiCenterPos);
+			GUILoadingToLobby(imGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
 
 		case GAME_STATE_OPTION_FROM_LOBBY:
 		{
-			RenderGuiOptionFromLobby(imGuiViewPort, imGuiCenterPos);
+			GUIOptionFromLobby(imGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
 
 		case GAME_STATE_OPTION_FROM_PAUSED:
 		{
-			RenderGuiOptionFromPaused(imGuiViewPort, imGuiCenterPos);
+			GUIOptionFromPaused(imGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
 
-		case GAME_STATE_CHECK_EXIT_FROM_LOBBY_TO_WINDOWS:
+		case GAME_STATE_EXIT_FROM_LOBBY_TO_WINDOWS:
 		{
-			RenderGuiCheckExitFromLobbyToWindows(imGuiViewPort, imGuiCenterPos);
+			GUIExitFromLobbyToWindows(imGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
 
-		case GAME_STATE_CHECK_EXIT_FROM_PAUSED_TO_WINDOWS:
+		case GAME_STATE_EXIT_FROM_PAUSED_TO_WINDOWS:
 		{
-			RenderGuiCheckExitFromPausedToWindows(imGuiViewPort, imGuiCenterPos);
+			GUIExitFromPausedToWindows(imGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
 
-		case GAME_STATE_CHECK_EXIT_FROM_PAUSED_TO_LOBBY:
+		case GAME_STATE_EXIT_FROM_PAUSED_TO_LOBBY:
 		{
-			RenderGuiCheckExitFromPausedToLobby(imGuiViewPort, imGuiCenterPos);
+			GUIExitFromPausedToLobby(imGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
 	}
 }
 
-void Sodo::UpdateSreen()
+void Sodo::UpdateScreen()
 {
-	WaitAllCommandDone();
+	ResetQueuedCommands();
 
 	ThrowIfFailed(m_commandAllocator->Reset());
 	ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), nullptr));

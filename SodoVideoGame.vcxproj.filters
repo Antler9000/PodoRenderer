@@ -110,13 +110,19 @@
     <ClCompile Include="Code\Source\SodoUpdate.cpp">
       <Filter>Code\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Source\Utility.cpp">
+    <ClCompile Include="Code\Source\SodoReset.cpp">
       <Filter>Code\Source</Filter>
     </ClCompile>
     <ClCompile Include="Code\Source\SodoClose.cpp">
       <Filter>Code\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Source\GUI.cpp">
+    <ClCompile Include="Code\Source\SodoGUI.cpp">
+      <Filter>Code\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Source\SodoOption.cpp">
+      <Filter>Code\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Source\SodoUtil.cpp">
       <Filter>Code\Source</Filter>
     </ClCompile>
   </ItemGroup>

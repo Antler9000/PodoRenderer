@@ -38,13 +38,15 @@
     <ClInclude Include="External\imgui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Code\Source\GUI.cpp" />
+    <ClCompile Include="Code\Source\SodoGUI.cpp" />
     <ClCompile Include="Code\Source\main.cpp" />
+    <ClCompile Include="Code\Source\SodoOption.cpp" />
     <ClCompile Include="Code\Source\SodoClose.cpp" />
     <ClCompile Include="Code\Source\SodoInit.cpp" />
     <ClCompile Include="Code\Source\SodoInput.cpp" />
     <ClCompile Include="Code\Source\SodoUpdate.cpp" />
-    <ClCompile Include="Code\Source\Utility.cpp" />
+    <ClCompile Include="Code\Source\SodoReset.cpp" />
+    <ClCompile Include="Code\Source\SodoUtil.cpp" />
     <ClCompile Include="External\imgui\backends\imgui_impl_dx12.cpp" />
     <ClCompile Include="External\imgui\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="External\imgui\imgui.cpp" />
