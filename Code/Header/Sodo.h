@@ -279,8 +279,9 @@ private:
 	Timer		m_timerCaption;
 	Timer		m_timerFrame;
 	
-	bool		IsStopped()	const					{ return m_isResizing || m_isInactive; }
+	bool		IsStopped()	const					{ return m_isResizing || m_isMoving || m_isInactive; }
 	bool		m_isResizing						= false;
+	bool		m_isMoving							= false;
 	bool		m_isInactive						= false;
 
 	bool		NeedResetDxgiInterfaces() const		{ return (m_dxgiFactory->IsCurrent() == FALSE) || m_needResetAdapterAndOutput; }
@@ -289,6 +290,11 @@ private:
 	bool		m_needResetScreenResolution			= false;
 	bool		m_needResetScreenMode				= false;
 	bool		m_needResetHDR						= false;
+
+	UINT		m_previousWindowPosX				= 0;
+	UINT		m_previousWindowPosY				= 0;
+	UINT		m_previousWindowWidth				= 1600;
+	UINT		m_previousWindowHeight				= 900;
 
 	POINT		m_inputMousePositionClient			= { 0, 0 };
 	POINT		m_inputMouseClickedPositionClient	= { 0, 0 };

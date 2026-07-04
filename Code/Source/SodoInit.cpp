@@ -296,6 +296,21 @@ void Sodo::InitSavedOptions()
 
 void Sodo::InitScreenMode()
 {
+	HMONITOR monitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
+	MONITORINFO monitorInfo{};
+	monitorInfo.cbSize = sizeof(MONITORINFO);
+	GetMonitorInfo(monitor, &monitorInfo);
+
+	LONG monitorBaseX = monitorInfo.rcMonitor.left;
+	LONG monitorBaseY = monitorInfo.rcMonitor.top;
+	LONG monitorWidth = monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left;
+	LONG monitorHeight = monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top;
+
+	m_previousWindowWidth = monitorWidth * 2 / 3;
+	m_previousWindowHeight = monitorHeight * 2 / 3;
+	m_previousWindowPosX = monitorBaseX + (monitorWidth / 2) - (m_previousWindowWidth / 2);
+	m_previousWindowPosY = monitorBaseY + (monitorHeight / 2) - (m_previousWindowHeight / 2);
+
 	if (m_optionFullScreen.IsActive() == true)
 	{
 		ResetToFullScreenMode();
@@ -335,6 +350,13 @@ void Sodo::InitSwapChain()
 			nullptr,
 			nullptr,
 			tempSwapChain.ReleaseAndGetAddressOf()
+		)
+	);
+
+	ThrowIfFailed(
+		m_dxgiFactory->MakeWindowAssociation(
+			m_hWnd,
+			DXGI_MWA_NO_ALT_ENTER
 		)
 	);
 

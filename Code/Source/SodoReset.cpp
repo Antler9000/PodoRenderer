@@ -4,6 +4,8 @@
 #include "Sodo.h"
 #include "Debug.h"
 
+#include <string>
+
 void Sodo::ResetQueuedCommands()
 {
 	if (m_fenceEvent == nullptr || m_fence == nullptr || m_commandQueue == nullptr)
@@ -134,6 +136,20 @@ void Sodo::ResetScreenSettings()
 
 void Sodo::ResetToFullScreenMode()
 {
+	UINT tempPreviousWindowPosX = 0;
+	UINT tempPreviousWindowPosY = 0;
+	UINT tempPreviousWindowWidth = 0;
+	UINT tempPreviousWindowHeight = 0;
+	RECT rectWindow = {};
+	BOOL queryResult = GetWindowRect(m_hWnd, &rectWindow);
+	if (queryResult != FALSE)
+	{
+		tempPreviousWindowPosX = rectWindow.left;
+		tempPreviousWindowPosY = rectWindow.top;
+		tempPreviousWindowWidth = rectWindow.right - rectWindow.left;
+		tempPreviousWindowHeight = rectWindow.bottom - rectWindow.top;
+	}
+
 	SetWindowLongPtr(m_hWnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
 
 	HMONITOR monitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
@@ -141,20 +157,37 @@ void Sodo::ResetToFullScreenMode()
 	monitorInfo.cbSize = sizeof(MONITORINFO);
 	GetMonitorInfo(monitor, &monitorInfo);
 
-	LONG monitorXBase = monitorInfo.rcMonitor.left;
-	LONG monitorYBase = monitorInfo.rcMonitor.top;
+	LONG monitorBaseX = monitorInfo.rcMonitor.left;
+	LONG monitorBaseY = monitorInfo.rcMonitor.top;
 	LONG monitorWidth = monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left;
 	LONG monitorHeight = monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top;
-
+	
 	SetWindowPos(
 		m_hWnd,
 		HWND_TOP,
-		monitorXBase,
-		monitorYBase,
+		monitorBaseX,
+		monitorBaseY,
 		monitorWidth,
 		monitorHeight,
 		SWP_NOOWNERZORDER | SWP_FRAMECHANGED
 	);
+
+	if (monitorBaseX <= tempPreviousWindowPosX && tempPreviousWindowPosX <= monitorBaseX + monitorWidth)
+	{
+		if (monitorBaseY <= tempPreviousWindowPosY && tempPreviousWindowPosY <= monitorBaseY + monitorHeight)
+		{
+			if (30 <= tempPreviousWindowWidth && tempPreviousWindowWidth <= monitorWidth)
+			{
+				if (30 <= tempPreviousWindowHeight && tempPreviousWindowHeight <= monitorHeight)
+				{
+					m_previousWindowPosX = tempPreviousWindowPosX;
+					m_previousWindowPosY = tempPreviousWindowPosY;
+					m_previousWindowWidth = tempPreviousWindowWidth;
+					m_previousWindowHeight = tempPreviousWindowHeight;
+				}
+			}
+		}
+	}
 }
 
 void Sodo::ResetToWindowMode()
@@ -166,23 +199,18 @@ void Sodo::ResetToWindowMode()
 	monitorInfo.cbSize = sizeof(MONITORINFO);
 	GetMonitorInfo(monitor, &monitorInfo);
 
-	LONG monitorXBase = monitorInfo.rcMonitor.left;
-	LONG monitorYBase = monitorInfo.rcMonitor.top;
+	LONG monitorBaseX = monitorInfo.rcMonitor.left;
+	LONG monitorBaseY = monitorInfo.rcMonitor.top;
 	LONG monitorWidth = monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left;
 	LONG monitorHeight = monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top;
-
-	LONG windowWidth = monitorWidth * 2 / 3;
-	LONG windowHeight = monitorHeight * 2 / 3;
-	LONG windowXBase = monitorXBase + (monitorWidth / 2) - (windowWidth / 2);
-	LONG windowYBase = monitorYBase + (monitorHeight / 2) - (windowHeight / 2);
 
 	SetWindowPos(
 		m_hWnd,
 		HWND_TOP,
-		windowXBase,
-		windowYBase,
-		windowWidth,
-		windowHeight,
+		(monitorBaseX <= m_previousWindowPosX) && (m_previousWindowPosX <= monitorBaseX + monitorWidth) ? m_previousWindowPosX : monitorBaseX,
+		(monitorBaseY <= m_previousWindowPosY) && (m_previousWindowPosY <= monitorBaseY + monitorHeight) ? m_previousWindowPosY : monitorBaseY,
+		(m_previousWindowWidth <= monitorWidth) ? m_previousWindowWidth : monitorWidth,
+		(m_previousWindowHeight <= monitorHeight) ? m_previousWindowHeight : monitorHeight,
 		SWP_NOOWNERZORDER | SWP_FRAMECHANGED
 	);
 }

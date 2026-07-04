@@ -117,28 +117,70 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			return 0;
 		}
 
+		case WM_SYSKEYDOWN:
+		{
+			//NOTE : ALT+ENTER을 처리함
+			if (wParam == VK_RETURN && (lParam & 0x40000000) == 0)
+			{
+				m_optionFullScreen.userEnabled = !m_optionFullScreen.userEnabled;
+				m_needResetScreenMode = true;
+
+				return 0;
+			}
+
+			return DefWindowProc(m_hWnd, uMsg, wParam, lParam);
+		}
+
+		case WM_SYSCHAR:
+		{
+			//NOTE : ALT+ENTER시 소리가 안 나도록 함
+			if (wParam == '\r')
+			{
+				return 0;
+			}
+
+			return DefWindowProc(m_hWnd, uMsg, wParam, lParam);
+		}
+
 		case WM_ENTERSIZEMOVE:
 		{
 			m_isResizing = true;
+			m_isMoving = true;
 			TimersStop();
 
 			return 0;
 		}
 
-		//NOTE : 창 모서리를 끌어 연장시킨 경우를 처리함
 		case WM_EXITSIZEMOVE:
 		{
-			m_needResetScreenResolution = true;
+			RECT rectClient = {};
+			BOOL queryResult = GetClientRect(m_hWnd, &rectClient);
+			if (queryResult != FALSE)
+			{
+				LONG widthClient = rectClient.right - rectClient.left;
+				LONG heightClient = rectClient.bottom - rectClient.top;
+
+				if (widthClient >= 10 && heightClient >= 10)
+				{
+					m_needResetScreenResolution = true;
+					m_needResetAdapterAndOutput = true;
+				}
+			}
 
 			m_isResizing = false;
+			m_isMoving = false;
 			TimersStart();
 
 			return 0;
 		}
 
-		//NOTE : 최대화 버튼을 누르는 경우를 처리함
 		case WM_SIZE:
 		{
+			if (wParam == SIZE_MINIMIZED)
+			{
+				return 0;
+			}
+
 			if (m_isResizing == true)
 			{
 				return 0;
@@ -149,16 +191,26 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			return 0;
 		}
 
-		case WM_DISPLAYCHANGE:
+		case WM_MOVE:
 		{
-			m_needResetScreenMode = true;
+			if (IsIconic(m_hWnd) != FALSE)
+			{
+				return 0;
+			}
+
+			if (m_isMoving == true)
+			{
+				return 0;
+			}
+
+			m_needResetAdapterAndOutput = true;
 
 			return 0;
 		}
 
-		case WM_MOVE:
+		case WM_DISPLAYCHANGE:
 		{
-			m_needResetAdapterAndOutput = true;
+			m_needResetScreenMode = true;
 
 			return 0;
 		}
