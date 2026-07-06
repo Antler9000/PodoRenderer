@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include <format>
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx12.h"
@@ -35,11 +36,8 @@ void Sodo::UpdateCaption()
 	{
 		int fps = static_cast<int>(1000 / m_timerFrame.GetTimeMilli());
 
-		wchar_t captionBuffer[256] = { };
-		swprintf_s(
-			captionBuffer,
-			_countof(captionBuffer),
-			L"%s (경과 시간 : %06.1f s / 프레임 시간 : %.4f ms / FPS : %3.d fps / 마우스 위치 : (%04d p, %04d p) / 스크롤 각도 : %04d unit)",
+		wstring caption = std::format(
+			L"{} (경과 시간 : {:06.1F} s / 프레임 시간 : {:0.4f} ms / FPS : {:3d} fps / 마우스 위치 : {:04d} p, {:04d} p / 스크롤 각도 : {:04d} unit)",
 			m_pAppName,
 			m_timerTotal.GetTimeMilli() / 1000,
 			m_timerFrame.GetTimeMilli(),
@@ -49,7 +47,7 @@ void Sodo::UpdateCaption()
 			m_inputScrollDelta
 		);
 
-		SetWindowTextW(m_hWnd, captionBuffer);
+		SetWindowTextW(m_hWnd, caption.c_str());
 
 		m_timerCaption.Mark();
 	}

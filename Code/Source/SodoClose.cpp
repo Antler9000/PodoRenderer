@@ -12,7 +12,14 @@ void Sodo::CloseFenceEvent()
 
 void Sodo::CloseImGui()
 {
+	if (m_imGuiInitialized == false)
+	{
+		return;
+	}
+
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+
+	m_imGuiDescriptorHeapAllocator.Destroy();
 }

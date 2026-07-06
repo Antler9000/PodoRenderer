@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include <windows.h>
+#include <string>
+#include <format>
 
 struct OptionFullScreen
 {
@@ -167,17 +169,16 @@ struct OptionSound
 	void DebugPrint() const
 	{
 #ifdef _DEBUG
-		wchar_t debugBuffer[128];
-		swprintf_s(debugBuffer, L"[SODO DEBUG] Sound : 마스터 볼륨 %d%%\n", masterVolume);
-		OutputDebugStringW(debugBuffer);
-		swprintf_s(debugBuffer, L"[SODO DEBUG] Sound : UI 볼륨 %d%%\n", uiVolume);
-		OutputDebugStringW(debugBuffer);
-		swprintf_s(debugBuffer, L"[SODO DEBUG] Sound : 유닛 볼륨 %d%%\n", unitVolume);
-		OutputDebugStringW(debugBuffer);
-		swprintf_s(debugBuffer, L"[SODO DEBUG] Sound : 효과 볼륨 %d%%\n", effectVolume);
-		OutputDebugStringW(debugBuffer);
-		swprintf_s(debugBuffer, L"[SODO DEBUG] Sound : 음악 볼륨 %d%%\n", musicVolume);
-		OutputDebugStringW(debugBuffer);
+		std::wstring masterVolumeString = std::format(L"[SODO DEBUG] Sound : 마스터 볼륨 {:d}%\n", masterVolume);
+		OutputDebugStringW(masterVolumeString.c_str());
+		std::wstring uiVolumeString = std::format(L"[SODO DEBUG] Sound : UI 볼륨 {:d}%\n", uiVolume);
+		OutputDebugStringW(uiVolumeString.c_str());
+		std::wstring unitVolumeString = std::format(L"[SODO DEBUG] Sound : 유닛 볼륨 {:d}%\n", unitVolume);
+		OutputDebugStringW(unitVolumeString.c_str());
+		std::wstring effectVolumeString = std::format(L"[SODO DEBUG] Sound : 효과 볼륨 {:d}%\n", effectVolume);
+		OutputDebugStringW(effectVolumeString.c_str());
+		std::wstring musicVolumeString = std::format(L"[SODO DEBUG] Sound : 음악 볼륨 {:d}%\n", musicVolume);
+		OutputDebugStringW(musicVolumeString.c_str());
 		OutputDebugStringW(IsActive() ? L"[SODO DEBUG] => Sound On \n" : L"[SODO DEBUG] => Sound Off \n");
 		OutputDebugStringW(L"\n");
 #endif

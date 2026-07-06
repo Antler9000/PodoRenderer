@@ -21,7 +21,7 @@ class Sodo : public BaseApp<Sodo>
 {
 public:
 
-	Sodo() : BaseApp(L"Sodo Video Game")
+	Sodo() : BaseApp(L"Sodo Sandbox")
 	{
 
 	}
@@ -159,7 +159,8 @@ private:
 
 private:
 
-	bool FindOutputForAdapter(IDXGIAdapter3* tempAdapter);
+	//RETURN : 창과 가장 넓은 면적이 겹치는 아웃풋이 어댑터 인자의 아웃풋 목록에 없으면 false를 반환함
+	bool FindMostIntersectingOutput(IDXGIAdapter3* adapter);
 
 	void ResetQueuedCommands();
 	void ResetDxgiInterfaces();
@@ -188,18 +189,8 @@ private:
 
 public:
 
-	//NOTE : ImGui의 버튼, 체크박스 등이 수정할 수 있어야 하므로 static으로 둠
-	static inline OptionFullScreen				m_optionFullScreen;
-	static inline OptionHDR						m_optionHDR;
-	static inline OptionTearing					m_optionTearing;
-	static inline OptionRayTracing				m_optionRayTracing;
-	static inline OptionMeshShader				m_optionMeshShader;
-	static inline OptionSound					m_optionSound;
-
 	//NOTE : ImGui에 넘겨주는 콜백 함수 속에서 기능해야 하므로 static으로 둠
 	static inline ImGuiDescriptorHeapAllocator	m_imGuiDescriptorHeapAllocator		= {};
-
-private:
 
 	static constexpr UINT						m_screenBackBufferCount				= 2;
 	static constexpr DXGI_FORMAT				m_screenBackBufferFormatSDR			= DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -270,6 +261,13 @@ private:
 	CD3DX12_CPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSCpuStartHandleForGame;
 	CD3DX12_GPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSGpuStartHandleForGame;
 	
+	OptionFullScreen					m_optionFullScreen;
+	OptionHDR							m_optionHDR;
+	OptionTearing						m_optionTearing;
+	OptionRayTracing					m_optionRayTracing;
+	OptionMeshShader					m_optionMeshShader;
+	OptionSound							m_optionSound;
+
 	bool		m_imGuiInitialized					= false;
 
 	void		TimersReset()						{ m_timerTotal.Reset(); m_timerCaption.Reset(); m_timerFrame.Reset(); }

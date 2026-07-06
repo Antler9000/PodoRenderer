@@ -1,4 +1,5 @@
 ﻿#include <windows.h>
+#include <stdexcept>
 #include <crtdbg.h>
 #include "Sodo.h"
 
@@ -15,7 +16,6 @@ extern "C" { __declspec(dllexport) extern const char* D3D12SDKPath = ".\\D3D12\\
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ PWSTR pCmdLine, _In_ int nCmdShow)
 {
-	//NOTE : 컴파일 경고를 지우기 위해 작성함
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(pCmdLine);
 
@@ -24,11 +24,20 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-	Sodo sodoInstance;
+	try
+	{
+		Sodo sodoInstance;
 
-	sodoInstance.CreateAppWindow(hInstance, nCmdShow);
+		sodoInstance.CreateAppWindow(hInstance, nCmdShow);
 
-	sodoInstance.InitApp();
+		sodoInstance.InitApp();
 
-	return sodoInstance.RunMessageLoop();
+		return sodoInstance.RunMessageLoop();
+	}
+	catch (const std::runtime_error& exception)
+	{
+		MessageBoxA(nullptr, exception.what(), "exception throwed", MB_OK);
+
+		return 0;
+	}
 }

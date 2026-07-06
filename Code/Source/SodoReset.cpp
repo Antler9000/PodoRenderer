@@ -4,15 +4,13 @@
 #include "Sodo.h"
 #include "Debug.h"
 
-#include <string>
-
 void Sodo::ResetQueuedCommands()
 {
 	if (m_fenceEvent == nullptr || m_fence == nullptr || m_commandQueue == nullptr)
 	{
 		return;
 	}
-
+	
 	m_fenceCurrent++;
 
 	ThrowIfFailed(m_commandQueue->Signal(m_fence.Get(), m_fenceCurrent));

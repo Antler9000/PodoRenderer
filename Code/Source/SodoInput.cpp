@@ -1,5 +1,7 @@
 ﻿#include <windows.h>
 #include <windowsx.h>
+#include <format>
+#include <string>
 #include <cstdio>
 #include <cstdlib>
 #include "imgui.h"
@@ -274,11 +276,8 @@ void Sodo::InputMouseLeftButtonDown(WPARAM wParam, LPARAM lParam)
 
 void Sodo::InputMouseLeftButtonUp(WPARAM wParam, LPARAM lParam)
 {
-	wchar_t messageBuffer[64] = { };
-	swprintf_s(
-		messageBuffer,
-		_countof(messageBuffer),
-		L"%s%s 시작 (x, y) = (%d, %d) \n 끝 (x, y) = (%d, %d)",
+	std::wstring message = std::format(
+		L"{}{} 시작 (x, y) = ({}, {}) \n 끝 (x, y) = ({}, {})",
 		wParam & MK_CONTROL ? L"[CTRL]" : L"",
 		wParam & MK_SHIFT ? L"[SHIFT]" : L"",
 		m_inputMouseClickedPositionClient.x,
@@ -289,7 +288,7 @@ void Sodo::InputMouseLeftButtonUp(WPARAM wParam, LPARAM lParam)
 
 	UINT mouseMovedManhattanDist = abs(GET_X_LPARAM(lParam) - m_inputMouseClickedPositionClient.x) + abs(GET_Y_LPARAM(lParam) - m_inputMouseClickedPositionClient.y);
 	bool isDrag = (mouseMovedManhattanDist > m_inputDragThresholdDist);
-	MessageBoxW(m_hWnd, messageBuffer, isDrag ? L"좌측 마우스 드래그" : L"좌측 마우스 클릭", MB_OK);
+	MessageBoxW(m_hWnd, message.c_str(), isDrag ? L"좌측 마우스 드래그" : L"좌측 마우스 클릭", MB_OK);
 
 	m_inputIsClicked = false;
 }
@@ -308,11 +307,9 @@ void Sodo::InputMouseRightButtonDown(WPARAM wParam, LPARAM lParam)
 
 void Sodo::InputMouseRightButtonUp(WPARAM wParam, LPARAM lParam)
 {
-	wchar_t messageBuffer[64] = { };
-	swprintf_s(
-		messageBuffer,
-		_countof(messageBuffer),
-		L"%s 시작 (x, y) = (%d, %d) \n 끝 (x, y) = (%d, %d)",
+	std::wstring message = std::format(
+		L"{}{} 시작 (x, y) = ({}, {}) \n 끝 (x, y) = ({}, {})",
+		wParam & MK_CONTROL ? L"[CTRL]" : L"",
 		wParam & MK_SHIFT ? L"[SHIFT]" : L"",
 		m_inputMouseClickedPositionClient.x,
 		m_inputMouseClickedPositionClient.y,
@@ -322,10 +319,9 @@ void Sodo::InputMouseRightButtonUp(WPARAM wParam, LPARAM lParam)
 
 	UINT mouseMovedManhattanDist = abs(GET_X_LPARAM(lParam) - m_inputMouseClickedPositionClient.x) + abs(GET_Y_LPARAM(lParam) - m_inputMouseClickedPositionClient.y);
 	bool isDragging = (mouseMovedManhattanDist > m_inputDragThresholdDist);
-	MessageBoxW(m_hWnd, messageBuffer, isDragging ? L"우측 마우스 드래그" : L"우측 마우스 클릭", MB_OK);
+	MessageBoxW(m_hWnd, message.c_str(), isDragging ? L"우측 마우스 드래그" : L"우측 마우스 클릭", MB_OK);
 
 	m_inputIsClicked = false;
-
 }
 
 void Sodo::InputMouseMiddleButtonDown(WPARAM wParam, LPARAM lParam)
@@ -339,13 +335,13 @@ void Sodo::InputMouseMiddleButtonDown(WPARAM wParam, LPARAM lParam)
 	m_inputMouseClickedPositionClient.y = GET_Y_LPARAM(lParam);
 	m_inputIsClicked = true;
 }
+
 void Sodo::InputMouseMiddleButtonUp(WPARAM wParam, LPARAM lParam)
 {
-	wchar_t messageBuffer[64] = { };
-	swprintf_s(
-		messageBuffer,
-		_countof(messageBuffer),
-		L"시작 (x, y) = (%d, %d) \n 끝 (x, y) = (%d, %d)",
+	std::wstring message = std::format(
+		L"{}{} 시작 (x, y) = ({}, {}) \n 끝 (x, y) = ({}, {})",
+		wParam & MK_CONTROL ? L"[CTRL]" : L"",
+		wParam & MK_SHIFT ? L"[SHIFT]" : L"",
 		m_inputMouseClickedPositionClient.x,
 		m_inputMouseClickedPositionClient.y,
 		GET_X_LPARAM(lParam),
@@ -354,7 +350,7 @@ void Sodo::InputMouseMiddleButtonUp(WPARAM wParam, LPARAM lParam)
 
 	UINT mouseMovedManhattanDist = abs(GET_X_LPARAM(lParam) - m_inputMouseClickedPositionClient.x) + abs(GET_Y_LPARAM(lParam) - m_inputMouseClickedPositionClient.y);
 	bool isDrag = (mouseMovedManhattanDist > m_inputDragThresholdDist);
-	MessageBoxW(m_hWnd, messageBuffer, isDrag ? L"중간 마우스 드래그" : L"중간 마우스 클릭", MB_OK);
+	MessageBoxW(m_hWnd, message.c_str(), isDrag ? L"중간 마우스 드래그" : L"중간 마우스 클릭", MB_OK);
 
 	m_inputIsClicked = false;
 }

@@ -62,7 +62,7 @@ void Sodo::InitAdapterAndOutput()
 
 		if (SUCCEEDED(result) == true)
 		{
-			if (FindOutputForAdapter(tempAdapter.Get()) == true)
+			if (FindMostIntersectingOutput(tempAdapter.Get()) == true)
 			{
 				m_dxgiAdapter = tempAdapter;
 
@@ -71,7 +71,7 @@ void Sodo::InitAdapterAndOutput()
 		}
 	}
 
-	throw std::runtime_error("there is no suitable adapter");
+	throw std::runtime_error("can't find adapter that connected with most intersecting output");
 }
 
 void Sodo::InitDevice()
@@ -528,11 +528,7 @@ void Sodo::InitCBVSRVUAV()
 
 void Sodo::InitImGui()
 {
-	if (m_imGuiInitialized == true)
-	{
-		CloseImGui();
-		m_imGuiDescriptorHeapAllocator.Destroy();
-	}
+	CloseImGui();
 
 	m_imGuiDescriptorHeapAllocator.Create(m_device.Get(), m_descriptorHeapCBVSRVUAV.Get(), m_imGuiDescriptorHeapCapacity);
 

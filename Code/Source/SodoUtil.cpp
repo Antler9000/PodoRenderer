@@ -5,7 +5,7 @@
 #include <wrl/client.h>
 #include "Sodo.h"
 
-bool Sodo::FindOutputForAdapter(IDXGIAdapter3* tempAdapter)
+bool Sodo::FindMostIntersectingOutput(IDXGIAdapter3* adapter)
 {
 	m_dxgiOutput.Reset();
 	m_dxgiOutput6.Reset();
@@ -18,7 +18,7 @@ bool Sodo::FindOutputForAdapter(IDXGIAdapter3* tempAdapter)
 	HRESULT result = S_OK;
 	for (UINT i = 0; result != DXGI_ERROR_NOT_FOUND; i++)
 	{
-		result = tempAdapter->EnumOutputs(i, tempOutput.ReleaseAndGetAddressOf());
+		result = adapter->EnumOutputs(i, tempOutput.ReleaseAndGetAddressOf());
 
 		if (SUCCEEDED(result) == true)
 		{

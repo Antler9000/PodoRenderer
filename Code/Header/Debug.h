@@ -1,30 +1,81 @@
 ﻿#pragma once
 #include <windows.h>
+#include <format>
+#include <string>
+#include <source_location>
 #include <stdexcept>
 #include <crtdbg.h>
 
-inline void ThrowIfNull(void* pResult)
+class SodoException : public std::runtime_error
 {
-	if (pResult == nullptr)
+public:
+
+	template <typename ResultType>
+	SodoException(ResultType result, std::string statement, std::source_location location)
+		: std::runtime_error(ErrorString(ResultString(result), statement, location))
 	{
-		throw std::runtime_error("throw because of null result");
+
 	}
+
+private:
+
+	static std::string ErrorString(std::string result, std::string statement, const std::source_location& location)
+	{
+		return std::format(
+			"result : {}\n\n"
+			"statement : {}\n\n"
+			"function : {}\n\n"
+			"file : {}\n\n"
+			"line : {}",
+			result,
+			statement,
+			location.function_name(),
+			location.file_name(),
+			location.line()
+		);
+	}
+
+	static std::string ResultString(HRESULT result)
+	{
+		return std::format("0x{:X}", static_cast<UINT32>(result));
+	}
+
+	static std::string ResultString(bool result)
+	{
+		return result ? "true" : "false";
+	}
+
+	static std::string ResultString(void* result)
+	{
+		return std::format("0x{:p}", static_cast<const void*>(result));
+	}
+};
+
+#define ThrowIfFailed(statement)\
+{\
+	HRESULT result = (statement);\
+	if (FAILED(result) == true)\
+	{\
+		throw SodoException(result, #statement, std::source_location::current());\
+	}\
 }
 
-inline void ThrowIfFalse(bool bResult)
-{
-	if (bResult == false)
-	{
-		throw std::runtime_error("throw because of false result");
-	}
+#define ThrowIfFalse(statement)\
+{\
+	bool result = (statement);\
+	if (result == false)\
+	{\
+		throw SodoException(result, #statement, std::source_location::current());\
+	}\
 }
 
-inline void ThrowIfFailed(HRESULT hResult)
-{
-	if (FAILED(hResult) == true)
-	{
-		throw std::runtime_error("throw because of failed result");
-	}
+#define ThrowIfNull(statement)\
+{\
+	void* result = (statement);\
+	if(result == nullptr)\
+	{\
+		throw SodoException(result, #statement, std::source_location::current());\
+	}\
 }
 
 //NOTE :	메모리 누수로 이어진 new 할당을 추적하기 위해 오버로딩된 new를 디버깅 과정에서 사용할 수 있도록 함
