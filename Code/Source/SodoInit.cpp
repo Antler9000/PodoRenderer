@@ -555,9 +555,10 @@ void Sodo::InitImGui()
 
 	ImGui::StyleColorsClassic();
 
-	ImGuiStyle& style = ImGui::GetStyle();	
-	style.ScaleAllSizes(m_imGuiScale);
-	style.FontScaleDpi = m_imGuiScale;
+	ImGuiStyle& style = ImGui::GetStyle();
+	float imGuiScale = 2.0f * m_optionGUI.GetMasterScale();
+	style.ScaleAllSizes(imGuiScale);
+	style.FontScaleDpi = imGuiScale;
 
 	ImVec4* colors = style.Colors;
 	colors[ImGuiCol_Text]				= ImVec4(0.78f, 0.74f, 0.63f, 1.0f);

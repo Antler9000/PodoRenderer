@@ -24,7 +24,7 @@ void Sodo::ResetQueuedCommands()
 	}
 }
 
-void Sodo::ResetDxgiInterfaces()
+void Sodo::ResetDxgiInterface()
 {
 	ResetQueuedCommands();
 
@@ -75,7 +75,7 @@ void Sodo::ResetDxgiInterfaces()
 	m_needResetAdapterAndOutput = false;
 }
 
-void Sodo::ResetScreenSettings()
+void Sodo::ResetScreenSetting()
 {
 	if (m_needResetScreenMode == true)
 	{
@@ -127,17 +127,18 @@ void Sodo::ResetScreenSettings()
 		InitImGui();
 	}
 
-	m_needResetScreenResolution = false;
-	m_needResetScreenMode = false;
-	m_needResetHDR = false;
+	m_needResetScreenMode		= false;
+	m_needResetScreenResolution	= false;
+	m_needResetHDR				= false;
+	m_needResetGUI				= false;
 }
 
 void Sodo::ResetToFullScreenMode()
 {
-	UINT tempPreviousWindowPosX = 0;
-	UINT tempPreviousWindowPosY = 0;
-	UINT tempPreviousWindowWidth = 0;
-	UINT tempPreviousWindowHeight = 0;
+	INT tempPreviousWindowPosX = 0;
+	INT tempPreviousWindowPosY = 0;
+	INT tempPreviousWindowWidth = 0;
+	INT tempPreviousWindowHeight = 0;
 	RECT rectWindow = {};
 	BOOL queryResult = GetWindowRect(m_hWnd, &rectWindow);
 	if (queryResult != FALSE)

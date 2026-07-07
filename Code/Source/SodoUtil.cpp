@@ -43,3 +43,26 @@ bool Sodo::FindMostIntersectingOutput(IDXGIAdapter3* adapter)
 
 	return false;
 }
+
+void Sodo::CheckAndExit()
+{
+	if (m_gameNeedAlive == true)
+	{
+		return;
+	}
+	if (m_gameNeedSave == true)
+	{
+		if (m_gameState == GAME_STATE_LOBBY || m_gameState == GAME_STATE_OPTION_FROM_LOBBY)
+		{
+			m_gameState = GAME_STATE_EXIT_FROM_LOBBY_TO_WINDOWS;
+		}
+		else if (m_gameState == GAME_STATE_IN_GAME || m_gameState == GAME_STATE_PAUSED || m_gameState == GAME_STATE_OPTION_FROM_PAUSED || m_gameState == GAME_STATE_EXIT_FROM_PAUSED_TO_LOBBY)
+		{
+			m_gameState = GAME_STATE_EXIT_FROM_PAUSED_TO_WINDOWS;
+		}
+	}
+	else
+	{
+		DestroyWindow(m_hWnd);
+	}
+}

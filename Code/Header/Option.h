@@ -143,18 +143,48 @@ struct OptionMeshShader
 	}
 };
 
-struct OptionSound
+struct OptionGUI
 {
-	int masterVolume = 100;
-	int uiVolume = 100;
-	int unitVolume = 100;
-	int effectVolume = 100;
-	int musicVolume = 100;
+	int masterSize = 100;
 
 	bool IsActive() const
 	{
-		bool isMasterSoundNotZero = (masterVolume != 0);
-		bool isAtLeastOneSoundNotZero = (uiVolume != 0) || (unitVolume != 0) || (effectVolume != 0) || (musicVolume != 0);
+		return IsSupported();
+	}
+
+	bool IsSupported() const
+	{
+		return true;
+	}
+
+	float GetMasterScale() const
+	{
+		return static_cast<float>(masterSize) / 100;
+	}
+
+	void DebugPrint() const
+	{
+#ifdef _DEBUG
+		std::wstring masterSizeString = std::format(L"[SODO DEBUG] GUI : 마스터 사이즈 {}%\n", masterSize);
+		OutputDebugStringW(masterSizeString.c_str());
+		OutputDebugStringW(IsActive() ? L"[SODO DEBUG] => GUI On \n" : L"[SODO DEBUG] => GUI Off \n");
+		OutputDebugStringW(L"\n");
+#endif
+	}
+};
+
+struct OptionSound
+{
+	int masterVolume	= 100;
+	int uiVolume		= 100;
+	int unitVolume		= 100;
+	int effectVolume	= 100;
+	int musicVolume		= 100;
+
+	bool IsActive() const
+	{
+		bool isMasterSoundNotZero = (0 < masterVolume);
+		bool isAtLeastOneSoundNotZero = (0 < uiVolume) || (0 < unitVolume) || (0 < effectVolume) || (0 < musicVolume);
 
 		return IsSupported() && isMasterSoundNotZero && isAtLeastOneSoundNotZero;
 	}
@@ -164,20 +194,18 @@ struct OptionSound
 		return true;
 	}
 
-	bool operator == (const OptionSound & rhs) const = default;
-
 	void DebugPrint() const
 	{
 #ifdef _DEBUG
-		std::wstring masterVolumeString = std::format(L"[SODO DEBUG] Sound : 마스터 볼륨 {:d}%\n", masterVolume);
+		std::wstring masterVolumeString = std::format(L"[SODO DEBUG] Sound : 마스터 볼륨 {}%\n", masterVolume);
 		OutputDebugStringW(masterVolumeString.c_str());
-		std::wstring uiVolumeString = std::format(L"[SODO DEBUG] Sound : UI 볼륨 {:d}%\n", uiVolume);
+		std::wstring uiVolumeString = std::format(L"[SODO DEBUG] Sound : UI 볼륨 {}%\n", uiVolume);
 		OutputDebugStringW(uiVolumeString.c_str());
-		std::wstring unitVolumeString = std::format(L"[SODO DEBUG] Sound : 유닛 볼륨 {:d}%\n", unitVolume);
+		std::wstring unitVolumeString = std::format(L"[SODO DEBUG] Sound : 유닛 볼륨 {}%\n", unitVolume);
 		OutputDebugStringW(unitVolumeString.c_str());
-		std::wstring effectVolumeString = std::format(L"[SODO DEBUG] Sound : 효과 볼륨 {:d}%\n", effectVolume);
+		std::wstring effectVolumeString = std::format(L"[SODO DEBUG] Sound : 효과 볼륨 {}%\n", effectVolume);
 		OutputDebugStringW(effectVolumeString.c_str());
-		std::wstring musicVolumeString = std::format(L"[SODO DEBUG] Sound : 음악 볼륨 {:d}%\n", musicVolume);
+		std::wstring musicVolumeString = std::format(L"[SODO DEBUG] Sound : 음악 볼륨 {}%\n", musicVolume);
 		OutputDebugStringW(musicVolumeString.c_str());
 		OutputDebugStringW(IsActive() ? L"[SODO DEBUG] => Sound On \n" : L"[SODO DEBUG] => Sound Off \n");
 		OutputDebugStringW(L"\n");

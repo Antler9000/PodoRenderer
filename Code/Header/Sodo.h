@@ -67,6 +67,7 @@ public:
 		m_optionTearing.DebugPrint();
 		m_optionRayTracing.DebugPrint();
 		m_optionMeshShader.DebugPrint();
+		m_optionGUI.DebugPrint();
 		m_optionSound.DebugPrint();
 	}
 
@@ -81,13 +82,13 @@ public:
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
 			}
-			else if (NeedResetDxgiInterfaces() == true)
+			else if (NeedResetDxgiInterface() == true)
 			{
-				ResetDxgiInterfaces();
+				ResetDxgiInterface();
 			}
-			else if (NeedResetScreenSettings() == true)
+			else if (NeedResetScreenSetting() == true)
 			{
-				ResetScreenSettings();
+				ResetScreenSetting();
 			}
 			else
 			{
@@ -161,11 +162,11 @@ private:
 
 	//RETURN : 창과 가장 넓은 면적이 겹치는 아웃풋이 어댑터 인자의 아웃풋 목록에 없으면 false를 반환함
 	bool FindMostIntersectingOutput(IDXGIAdapter3* adapter);
+	void CheckAndExit();
 
 	void ResetQueuedCommands();
-	void ResetDxgiInterfaces();
-	void ResetOutputSupport();
-	void ResetScreenSettings();
+	void ResetDxgiInterface();
+	void ResetScreenSetting();
 	void ResetToFullScreenMode();
 	void ResetToWindowMode();
 
@@ -201,11 +202,10 @@ public:
 
 	static constexpr UINT						m_inputDragThresholdDist			= 20;
 
-	static constexpr float						m_imGuiScale						= 2.0f;
-	static constexpr ImVec2						m_imGuiSpacingSize					= ImVec2(0.0f, 10.0f);
-	static constexpr ImVec2						m_imGuiSmallButtonSize				= ImVec2(120.0f, 40.0f);
-	static constexpr ImVec2						m_imGuiMediumButtonSize				= ImVec2(240.0f, 40.0f);
-	static constexpr ImVec2						m_imguiLargeButtonSize				= ImVec2(360.0f, 40.0f);
+	static constexpr ImVec2						m_imGuiSpacingBaseSize				= ImVec2(0.0f, 10.0f);
+	static constexpr ImVec2						m_imGuiSmallButtonBaseSize			= ImVec2(120.0f, 40.0f);
+	static constexpr ImVec2						m_imGuiMediumButtonBaseSize			= ImVec2(240.0f, 40.0f);
+	static constexpr ImVec2						m_imguiLargeButtonBaseSize			= ImVec2(360.0f, 40.0f);
 	static constexpr UINT						m_imGuiDescriptorHeapCapacity		= 64;
 	static constexpr ImGuiWindowFlags			m_imGuiBasicFlag					= ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
 																					| ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings;
@@ -264,6 +264,7 @@ private:
 	OptionFullScreen					m_optionFullScreen;
 	OptionHDR							m_optionHDR;
 	OptionTearing						m_optionTearing;
+	OptionGUI							m_optionGUI;
 	OptionRayTracing					m_optionRayTracing;
 	OptionMeshShader					m_optionMeshShader;
 	OptionSound							m_optionSound;
@@ -282,17 +283,18 @@ private:
 	bool		m_isMoving							= false;
 	bool		m_isInactive						= false;
 
-	bool		NeedResetDxgiInterfaces() const		{ return (m_dxgiFactory->IsCurrent() == FALSE) || m_needResetAdapterAndOutput; }
+	bool		NeedResetDxgiInterface() const		{ return (m_dxgiFactory->IsCurrent() == FALSE) || m_needResetAdapterAndOutput; }
 	bool		m_needResetAdapterAndOutput			= false;
-	bool		NeedResetScreenSettings() const		{ return m_needResetScreenResolution || m_needResetScreenMode || m_needResetHDR; }
-	bool		m_needResetScreenResolution			= false;
+	bool		NeedResetScreenSetting() const		{ return m_needResetScreenMode || m_needResetScreenResolution || m_needResetHDR || m_needResetGUI; }
 	bool		m_needResetScreenMode				= false;
+	bool		m_needResetScreenResolution			= false;
 	bool		m_needResetHDR						= false;
+	bool		m_needResetGUI						= false;
 
-	UINT		m_previousWindowPosX				= 0;
-	UINT		m_previousWindowPosY				= 0;
-	UINT		m_previousWindowWidth				= 1600;
-	UINT		m_previousWindowHeight				= 900;
+	INT			m_previousWindowPosX				= 0; 
+	INT			m_previousWindowPosY				= 0;
+	INT			m_previousWindowWidth				= 1600;
+	INT			m_previousWindowHeight				= 900;
 
 	POINT		m_inputMousePositionClient			= { 0, 0 };
 	POINT		m_inputMouseClickedPositionClient	= { 0, 0 };
@@ -300,4 +302,6 @@ private:
 	int			m_inputScrollDelta					= 0;
 
 	GameState	m_gameState							= GAME_STATE_LOBBY;
+	bool		m_gameNeedAlive						= false;
+	bool		m_gameNeedSave						= false;
 };

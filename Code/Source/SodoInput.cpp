@@ -2,7 +2,6 @@
 #include <windowsx.h>
 #include <format>
 #include <string>
-#include <cstdio>
 #include <cstdlib>
 #include "imgui.h"
 #include "Sodo.h"
@@ -121,7 +120,7 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		case WM_SYSKEYDOWN:
 		{
-			//NOTE : ALT+ENTER을 처리함
+			//NOTE : ALT+ENTER을 이용한 전체 화면 모드 전환을 처리함
 			if (wParam == VK_RETURN && (lParam & 0x40000000) == 0)
 			{
 				m_optionFullScreen.userEnabled = !m_optionFullScreen.userEnabled;
@@ -135,7 +134,7 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		case WM_SYSCHAR:
 		{
-			//NOTE : ALT+ENTER시 소리가 안 나도록 함
+			//NOTE : ALT+ENTER을 이용한 전체 화면 모드 전환시 윈도우 알림음이 안 나도록 함
 			if (wParam == '\r')
 			{
 				return 0;
@@ -236,11 +235,7 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		//NOTE : ALT+F4 혹은 우상단 창닫기 버튼을 이용한 종료를 처리함
 		case WM_CLOSE:
 		{
-			int result = MessageBoxW(m_hWnd, L"어플리케이션을 종료합니까?", L"종료 문구", MB_OKCANCEL);
-			if (result == IDOK)
-			{
-				DestroyWindow(m_hWnd);
-			}
+			CheckAndExit();
 
 			return 0;
 		}
@@ -362,13 +357,8 @@ void Sodo::InputMouseWheelScroll(WPARAM wParam, LPARAM lParam)
 
 void Sodo::InputKeyboardDown(WPARAM wParam, LPARAM lParam)
 {
-	//ESC를 이용한 종료를 처리함
 	if (wParam == VK_ESCAPE)
 	{
-		int result = MessageBoxW(m_hWnd, L"ESC가 눌렸습니다. 어플리케이션을 종료합니까?", L"종료 문구", MB_OKCANCEL);
-		if (result == IDOK)
-		{
-			DestroyWindow(m_hWnd);
-		}
+		
 	}
 }
