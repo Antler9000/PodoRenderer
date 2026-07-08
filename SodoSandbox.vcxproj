@@ -46,7 +46,6 @@
     <ClCompile Include="Code\Source\SodoInput.cpp" />
     <ClCompile Include="Code\Source\SodoUpdate.cpp" />
     <ClCompile Include="Code\Source\SodoReset.cpp" />
-    <ClCompile Include="Code\Source\SodoUtil.cpp" />
     <ClCompile Include="External\imgui\backends\imgui_impl_dx12.cpp" />
     <ClCompile Include="External\imgui\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="External\imgui\imgui.cpp" />

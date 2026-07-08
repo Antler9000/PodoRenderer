@@ -1,13 +1,13 @@
-﻿#include <windows.h>
+﻿#define IMGUI_DEFINE_MATH_OPERATORS
+#include <windows.h>
 #include <d3dx12_root_signature.h>
 #include <d3dx12_barriers.h>
 #include <d3d12.h>
 #include <DirectXMath.h>
 #include <dxgi.h>
-#include <cstdio>
-#include <cstdlib>
-#include <string>
 #include <format>
+#include <string>
+#include <cstdlib>
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx12.h"
@@ -63,25 +63,16 @@ void Sodo::UpdateImGui()
 	ImGuiViewport* imGuiViewPort = ImGui::GetMainViewport();
 	ImVec2 imGuiCenterPos = imGuiViewPort->GetCenter();
 
-	switch (m_gameState)
+	m_imGuiSpacingSize = ImVec2(0.0f, 10.0f) * m_optionGUI.GetMasterScale();
+	m_imGuiSmallButtonSize = ImVec2(120.0f, 40.0f) * m_optionGUI.GetMasterScale();
+	m_imGuiMediumButtonSize = ImVec2(240.0f, 40.0f) * m_optionGUI.GetMasterScale();
+	m_imGuiLargeButtonSize = ImVec2(360.0f, 40.0f) * m_optionGUI.GetMasterScale();
+
+	switch (m_nowGameState)
 	{
-		case GAME_STATE_IN_GAME:
-		{
-			GUIInGame(imGuiViewPort, imGuiCenterPos);
-
-			break;
-		}
-
 		case GAME_STATE_LOBBY:
 		{
-			GUILobbyMenu(imGuiViewPort, imGuiCenterPos);
-
-			break;
-		}
-
-		case GAME_STATE_PAUSED:
-		{
-			GUIPausedMenu(imGuiViewPort, imGuiCenterPos);
+			GUILobby(imGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
@@ -89,6 +80,27 @@ void Sodo::UpdateImGui()
 		case GAME_STATE_LOADING_TO_GAME:
 		{
 			GUILoadingToGame(imGuiViewPort, imGuiCenterPos);
+
+			break;
+		}
+		
+		case GAME_STATE_IN_GAME:
+		{
+			GUIInGame(imGuiViewPort, imGuiCenterPos);
+
+			break;
+		}
+
+		case GAME_STATE_PAUSED_GAME:
+		{
+			GUIPausedGame(imGuiViewPort, imGuiCenterPos);
+
+			break;
+		}
+
+		case GAME_STATE_CHECK_EXIT_TO_LOBBY:
+		{
+			GUICheckExitToLobby(imGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
@@ -100,37 +112,16 @@ void Sodo::UpdateImGui()
 			break;
 		}
 
-		case GAME_STATE_OPTION_FROM_LOBBY:
+		case GAME_STATE_OPTION:
 		{
-			GUIOptionFromLobby(imGuiViewPort, imGuiCenterPos);
+			GUIOption(imGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
 
-		case GAME_STATE_OPTION_FROM_PAUSED:
+		case GAME_STATE_CHECK_EXIT_TO_WINDOW:
 		{
-			GUIOptionFromPaused(imGuiViewPort, imGuiCenterPos);
-
-			break;
-		}
-
-		case GAME_STATE_EXIT_FROM_LOBBY_TO_WINDOWS:
-		{
-			GUIExitFromLobbyToWindows(imGuiViewPort, imGuiCenterPos);
-
-			break;
-		}
-
-		case GAME_STATE_EXIT_FROM_PAUSED_TO_WINDOWS:
-		{
-			GUIExitFromPausedToWindows(imGuiViewPort, imGuiCenterPos);
-
-			break;
-		}
-
-		case GAME_STATE_EXIT_FROM_PAUSED_TO_LOBBY:
-		{
-			GUIExitFromPausedToLobby(imGuiViewPort, imGuiCenterPos);
+			GUICheckExitToWindow(imGuiViewPort, imGuiCenterPos);
 
 			break;
 		}

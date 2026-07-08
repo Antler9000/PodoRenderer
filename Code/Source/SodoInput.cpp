@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include "imgui.h"
 #include "Sodo.h"
+#include "Game.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -235,7 +236,15 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		//NOTE : ALT+F4 혹은 우상단 창닫기 버튼을 이용한 종료를 처리함
 		case WM_CLOSE:
 		{
-			CheckAndExit();
+			if (GameNeedSave() == true)
+			{
+				m_previousGameStates.push(m_nowGameState);
+				m_nowGameState = GAME_STATE_CHECK_EXIT_TO_WINDOW;
+			}
+			else
+			{
+				DestroyWindow(m_hWnd);
+			}
 
 			return 0;
 		}
@@ -281,7 +290,7 @@ void Sodo::InputMouseLeftButtonUp(WPARAM wParam, LPARAM lParam)
 		GET_Y_LPARAM(lParam)
 	);
 
-	UINT mouseMovedManhattanDist = abs(GET_X_LPARAM(lParam) - m_inputMouseClickedPositionClient.x) + abs(GET_Y_LPARAM(lParam) - m_inputMouseClickedPositionClient.y);
+	unsigned int mouseMovedManhattanDist = abs(GET_X_LPARAM(lParam) - m_inputMouseClickedPositionClient.x) + abs(GET_Y_LPARAM(lParam) - m_inputMouseClickedPositionClient.y);
 	bool isDrag = (mouseMovedManhattanDist > m_inputDragThresholdDist);
 	MessageBoxW(m_hWnd, message.c_str(), isDrag ? L"좌측 마우스 드래그" : L"좌측 마우스 클릭", MB_OK);
 
@@ -312,7 +321,7 @@ void Sodo::InputMouseRightButtonUp(WPARAM wParam, LPARAM lParam)
 		GET_Y_LPARAM(lParam)
 	);
 
-	UINT mouseMovedManhattanDist = abs(GET_X_LPARAM(lParam) - m_inputMouseClickedPositionClient.x) + abs(GET_Y_LPARAM(lParam) - m_inputMouseClickedPositionClient.y);
+	unsigned int mouseMovedManhattanDist = abs(GET_X_LPARAM(lParam) - m_inputMouseClickedPositionClient.x) + abs(GET_Y_LPARAM(lParam) - m_inputMouseClickedPositionClient.y);
 	bool isDragging = (mouseMovedManhattanDist > m_inputDragThresholdDist);
 	MessageBoxW(m_hWnd, message.c_str(), isDragging ? L"우측 마우스 드래그" : L"우측 마우스 클릭", MB_OK);
 
@@ -343,7 +352,7 @@ void Sodo::InputMouseMiddleButtonUp(WPARAM wParam, LPARAM lParam)
 		GET_Y_LPARAM(lParam)
 	);
 
-	UINT mouseMovedManhattanDist = abs(GET_X_LPARAM(lParam) - m_inputMouseClickedPositionClient.x) + abs(GET_Y_LPARAM(lParam) - m_inputMouseClickedPositionClient.y);
+	unsigned int mouseMovedManhattanDist = abs(GET_X_LPARAM(lParam) - m_inputMouseClickedPositionClient.x) + abs(GET_Y_LPARAM(lParam) - m_inputMouseClickedPositionClient.y);
 	bool isDrag = (mouseMovedManhattanDist > m_inputDragThresholdDist);
 	MessageBoxW(m_hWnd, message.c_str(), isDrag ? L"중간 마우스 드래그" : L"중간 마우스 클릭", MB_OK);
 
@@ -357,8 +366,8 @@ void Sodo::InputMouseWheelScroll(WPARAM wParam, LPARAM lParam)
 
 void Sodo::InputKeyboardDown(WPARAM wParam, LPARAM lParam)
 {
-	if (wParam == VK_ESCAPE)
-	{
-		
-	}
+	//if (wParam == VK_ESCAPE)
+	//{
+	//	
+	//}
 }

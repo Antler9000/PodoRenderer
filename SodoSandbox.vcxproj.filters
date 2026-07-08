@@ -122,8 +122,5 @@
     <ClCompile Include="Code\Source\SodoOption.cpp">
       <Filter>Code\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Source\SodoUtil.cpp">
-      <Filter>Code\Source</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

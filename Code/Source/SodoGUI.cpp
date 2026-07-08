@@ -1,118 +1,47 @@
 ﻿#define IMGUI_DEFINE_MATH_OPERATORS
 #include <windows.h>
+#include <stack>
+#include <cstdlib>
 #include "imgui.h"
 #include "Sodo.h"
 #include "Game.h"
 
-void Sodo::GUIInGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
-{
-	ImVec2 pos = ImVec2(
-		imGuiViewPort->Pos.x,
-		imGuiViewPort->Pos.y + imGuiViewPort->Size.y * 0.75f
-	);
-
-	ImVec2 size = ImVec2(
-		imGuiViewPort->Size.x,
-		imGuiViewPort->Size.y * 0.25f
-	);
-
-	ImGui::SetNextWindowPos(pos, ImGuiCond_Always);
-	ImGui::SetNextWindowSize(size, ImGuiCond_Always);
-
-	ImGui::Begin("In game", nullptr, m_imGuiBasicFlag);
-
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
-
-	bool menuButtonClicked = ImGui::Button("Menu", m_imGuiSmallButtonBaseSize * m_optionGUI.GetMasterScale());
-	if (menuButtonClicked == true)
-	{
-		m_gameState = GAME_STATE_PAUSED;
-	}
-
-	ImGui::End();
-}
-
-void Sodo::GUILobbyMenu(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUILobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 	ImGui::SetNextWindowSize(ImVec2(250.0f, 330.0f) * m_optionGUI.GetMasterScale(), ImGuiCond_Always);
 
 	ImGui::Begin("Lobby", nullptr, m_imGuiBasicFlag);
 
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
+	ImGui::Dummy(m_imGuiSpacingSize);
 
-	bool playButtonClicked = ImGui::Button("Play", m_imGuiSmallButtonBaseSize * m_optionGUI.GetMasterScale());
+	bool playButtonClicked = ImGui::Button("Play", m_imGuiSmallButtonSize);
 	if (playButtonClicked == true)
 	{
-		m_gameState = GAME_STATE_LOADING_TO_GAME;
+		m_previousGameStates = std::stack<GameState>();
+		m_nowGameState = GAME_STATE_LOADING_TO_GAME;
 	}
 
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
+	ImGui::Dummy(m_imGuiSpacingSize);
 	ImGui::Separator();
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
+	ImGui::Dummy(m_imGuiSpacingSize);
 
-	bool optionButtonClicked = ImGui::Button("Option", m_imGuiSmallButtonBaseSize * m_optionGUI.GetMasterScale());
+	bool optionButtonClicked = ImGui::Button("Option", m_imGuiSmallButtonSize);
 	if (optionButtonClicked == true)
 	{
-		m_gameState = GAME_STATE_OPTION_FROM_LOBBY;
+		m_previousGameStates.push(m_nowGameState);
+		m_nowGameState = GAME_STATE_OPTION;
 	}
 
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
+	ImGui::Dummy(m_imGuiSpacingSize);
 	ImGui::Separator();
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
+	ImGui::Dummy(m_imGuiSpacingSize);
 
-	bool exitButtonClicked = ImGui::Button("Exit", m_imGuiSmallButtonBaseSize * m_optionGUI.GetMasterScale());
+	bool exitButtonClicked = ImGui::Button("Exit", m_imGuiSmallButtonSize);
 	if (exitButtonClicked == true)
 	{
-		m_gameState = GAME_STATE_EXIT_FROM_LOBBY_TO_WINDOWS;
-	}
-
-	ImGui::End();
-}
-
-void Sodo::GUIPausedMenu(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
-{
-	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-	ImGui::SetNextWindowSize(ImVec2(300.0f, 430.0f) * m_optionGUI.GetMasterScale(), ImGuiCond_Always);
-
-	ImGui::Begin("Paused", nullptr, m_imGuiBasicFlag);
-
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
-
-	bool resumeButtonClicked = ImGui::Button("Resume", m_imGuiSmallButtonBaseSize * m_optionGUI.GetMasterScale());
-	if (resumeButtonClicked == true)
-	{
-		m_gameState = GAME_STATE_IN_GAME;
-	}
-
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
-	ImGui::Separator();
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
-
-	bool optionButtonClicked = ImGui::Button("Option", m_imGuiSmallButtonBaseSize * m_optionGUI.GetMasterScale());
-	if (optionButtonClicked == true)
-	{
-		m_gameState = GAME_STATE_OPTION_FROM_PAUSED;
-	}
-
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
-	ImGui::Separator();
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
-
-	bool exitToLobbyButtonClicked = ImGui::Button("Exit to lobby", m_imGuiMediumButtonBaseSize * m_optionGUI.GetMasterScale());
-	if (exitToLobbyButtonClicked == true)
-	{
-		m_gameState = GAME_STATE_EXIT_FROM_PAUSED_TO_LOBBY;
-	}
-
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
-	ImGui::Separator();
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
-
-	bool exitToWindowButtonClicked = ImGui::Button("Exit to window", m_imGuiMediumButtonBaseSize * m_optionGUI.GetMasterScale());
-	if (exitToWindowButtonClicked == true)
-	{
-		m_gameState = GAME_STATE_EXIT_FROM_PAUSED_TO_WINDOWS;
+		m_previousGameStates.push(m_nowGameState);
+		m_nowGameState = GAME_STATE_CHECK_EXIT_TO_WINDOW;
 	}
 
 	ImGui::End();
@@ -132,12 +61,128 @@ void Sodo::GUILoadingToGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 
 	ImGui::Begin("Loading", nullptr, loadingGuiFlag);
 
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
+	ImGui::Dummy(m_imGuiSpacingSize);
 
-	bool startButtonClicked = ImGui::Button("Click here to start", m_imguiLargeButtonBaseSize * m_optionGUI.GetMasterScale());
+	bool startButtonClicked = ImGui::Button("Click here to start", m_imGuiLargeButtonSize);
 	if (startButtonClicked == true)
 	{
-		m_gameState = GAME_STATE_IN_GAME;
+		m_previousGameStates = std::stack<GameState>();
+		m_nowGameState = GAME_STATE_IN_GAME;
+	}
+
+	ImGui::End();
+}
+
+void Sodo::GUIInGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+{
+	ImVec2 pos = ImVec2(
+		imGuiViewPort->Pos.x,
+		imGuiViewPort->Pos.y + imGuiViewPort->Size.y * 0.75f
+	);
+
+	ImVec2 size = ImVec2(
+		imGuiViewPort->Size.x,
+		imGuiViewPort->Size.y * 0.25f
+	);
+
+	ImGui::SetNextWindowPos(pos, ImGuiCond_Always);
+	ImGui::SetNextWindowSize(size, ImGuiCond_Always);
+
+	ImGui::Begin("In game", nullptr, m_imGuiBasicFlag);
+
+	ImGui::Dummy(m_imGuiSpacingSize);
+
+	bool menuButtonClicked = ImGui::Button("Menu", m_imGuiSmallButtonSize);
+	if (menuButtonClicked == true)
+	{
+		m_previousGameStates.push(m_nowGameState);
+		m_nowGameState = GAME_STATE_PAUSED_GAME;
+	}
+
+	ImGui::End();
+}
+
+void Sodo::GUIPausedGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+{
+	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+	ImGui::SetNextWindowSize(ImVec2(300.0f, 430.0f) * m_optionGUI.GetMasterScale(), ImGuiCond_Always);
+
+	ImGui::Begin("Paused", nullptr, m_imGuiBasicFlag);
+
+	ImGui::Dummy(m_imGuiSpacingSize);
+
+	bool resumeButtonClicked = ImGui::Button("Resume", m_imGuiSmallButtonSize);
+	bool escKeyPressed = ImGui::IsKeyPressed(ImGuiKey_Escape, false);
+	if (resumeButtonClicked == true || escKeyPressed == true)
+	{
+		m_nowGameState = m_previousGameStates.top();
+		m_previousGameStates.pop();
+	}
+
+	ImGui::Dummy(m_imGuiSpacingSize);
+	ImGui::Separator();
+	ImGui::Dummy(m_imGuiSpacingSize);
+
+	bool optionButtonClicked = ImGui::Button("Option", m_imGuiSmallButtonSize);
+	if (optionButtonClicked == true)
+	{
+		m_previousGameStates.push(m_nowGameState);
+		m_nowGameState = GAME_STATE_OPTION;
+	}
+
+	ImGui::Dummy(m_imGuiSpacingSize);
+	ImGui::Separator();
+	ImGui::Dummy(m_imGuiSpacingSize);
+
+	bool exitToLobbyButtonClicked = ImGui::Button("Exit to lobby", m_imGuiMediumButtonSize);
+	if (exitToLobbyButtonClicked == true)
+	{
+		m_previousGameStates.push(m_nowGameState);
+		m_nowGameState = GAME_STATE_CHECK_EXIT_TO_LOBBY;
+	}
+
+	ImGui::Dummy(m_imGuiSpacingSize);
+	ImGui::Separator();
+	ImGui::Dummy(m_imGuiSpacingSize);
+
+	bool exitToWindowButtonClicked = ImGui::Button("Exit to window", m_imGuiMediumButtonSize);
+	if (exitToWindowButtonClicked == true)
+	{
+		m_previousGameStates.push(m_nowGameState);
+		m_nowGameState = GAME_STATE_CHECK_EXIT_TO_WINDOW;
+	}
+
+	ImGui::End();
+}
+
+void Sodo::GUICheckExitToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+{
+	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+	ImGui::SetNextWindowSize(ImVec2(600.0f, 200.0f) * m_optionGUI.GetMasterScale(), ImGuiCond_Always);
+
+	ImGui::Begin("Check", nullptr, m_imGuiBasicFlag);
+
+	ImGui::Dummy(m_imGuiSpacingSize);
+
+	ImGui::Text("Do you really want to exit to lobby?");
+
+	ImGui::Dummy(m_imGuiSpacingSize);
+
+	bool noButtonClicked = ImGui::Button("No", m_imGuiSmallButtonSize);
+	bool escKeyPressed = ImGui::IsKeyPressed(ImGuiKey_Escape, false);
+	if (noButtonClicked == true || escKeyPressed == true)
+	{
+		m_nowGameState = m_previousGameStates.top();
+		m_previousGameStates.pop();
+	}
+
+	ImGui::SameLine();
+
+	bool yesButtonClicked = ImGui::Button("Yes", m_imGuiSmallButtonSize);
+	if (yesButtonClicked == true)
+	{
+		m_previousGameStates = std::stack<GameState>();
+		m_nowGameState = GAME_STATE_LOADING_TO_LOBBY;
 	}
 
 	ImGui::End();
@@ -157,112 +202,40 @@ void Sodo::GUILoadingToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos
 
 	ImGui::Begin("Loading", nullptr, loadingGuiFlag);
 
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
+	ImGui::Dummy(m_imGuiSpacingSize);
 
-	bool endButtonClicked = ImGui::Button("Click here to end", m_imguiLargeButtonBaseSize * m_optionGUI.GetMasterScale());
+	bool endButtonClicked = ImGui::Button("Click here to end", m_imGuiLargeButtonSize);
 	if (endButtonClicked == true)
 	{
-		m_gameState = GAME_STATE_LOBBY;
+		m_previousGameStates = std::stack<GameState>();
+		m_nowGameState = GAME_STATE_LOBBY;
 	}
 
 	ImGui::End();
 }
 
-void Sodo::GUIOptionFromLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUIOption(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 	ImGui::SetNextWindowSize(ImVec2(700.0f, 850.0f) * m_optionGUI.GetMasterScale(), ImGuiCond_Always);
 
 	ImGui::Begin("Option", nullptr, m_imGuiBasicFlag);
 
-	bool backButtonClicked = ImGui::Button("Back", m_imGuiSmallButtonBaseSize * m_optionGUI.GetMasterScale());
-	if (backButtonClicked == true)
+	bool backButtonClicked = ImGui::Button("Back", m_imGuiSmallButtonSize);
+	bool escKeyPressed = ImGui::IsKeyPressed(ImGuiKey_Escape, false);
+	if (backButtonClicked == true || escKeyPressed == true)
 	{
 		OptionSave();
 
-		m_gameState = GAME_STATE_LOBBY;
+		m_nowGameState = m_previousGameStates.top();
+		m_previousGameStates.pop();
 	}
 
-	GUIOptionCommon();
-
-	ImGui::End();
-}
-
-void Sodo::GUIOptionFromPaused(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
-{
-	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-	ImGui::SetNextWindowSize(ImVec2(700.0f, 850.0f) * m_optionGUI.GetMasterScale(), ImGuiCond_Always);
-
-	ImGui::Begin("Option", nullptr, m_imGuiBasicFlag);
-
-	bool backButtonClicked = ImGui::Button("Back", m_imGuiSmallButtonBaseSize * m_optionGUI.GetMasterScale());
-	if (backButtonClicked == true)
-	{
-		OptionSave();
-
-		m_gameState = GAME_STATE_PAUSED;
-	}
-
-	GUIOptionCommon();
-
-	ImGui::End();
-}
-
-void Sodo::GUIExitFromLobbyToWindows(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
-{
-	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-	ImGui::SetNextWindowSize(ImVec2(600.0f, 200.0f) * m_optionGUI.GetMasterScale(), ImGuiCond_Always);
-
-	ImGui::Begin("Check", nullptr, m_imGuiBasicFlag);
-
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
-
-	ImGui::Text("Do you really want to exit to window?");
-
-	GUIExitCommon(GAME_STATE_LOBBY, GAME_STATE_TERMINATE);
-
-	ImGui::End();
-}
-
-void Sodo::GUIExitFromPausedToWindows(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
-{
-	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-	ImGui::SetNextWindowSize(ImVec2(600.0f, 200.0f) * m_optionGUI.GetMasterScale(), ImGuiCond_Always);
-
-	ImGui::Begin("Check", nullptr, m_imGuiBasicFlag);
-
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
-
-	ImGui::Text("Do you really want to exit to window?");
-
-	GUIExitCommon(GAME_STATE_PAUSED, GAME_STATE_TERMINATE);
-
-	ImGui::End();
-}
-
-void Sodo::GUIExitFromPausedToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
-{
-	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-	ImGui::SetNextWindowSize(ImVec2(600.0f, 200.0f) * m_optionGUI.GetMasterScale(), ImGuiCond_Always);
-
-	ImGui::Begin("Check", nullptr, m_imGuiBasicFlag);
-
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
-
-	ImGui::Text("Do you really want to exit to lobby?");
-
-	GUIExitCommon(GAME_STATE_PAUSED, GAME_STATE_LOADING_TO_LOBBY);
-
-	ImGui::End();
-}
-
-void Sodo::GUIOptionCommon()
-{
 	bool previousFullScreenState = m_optionFullScreen.IsActive();
 	bool previousHDRState = m_optionHDR.IsActive();
 	int previousGUIState = m_optionGUI.masterSize;
 
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
+	ImGui::Dummy(m_imGuiSpacingSize);
 
 	ImGui::Text("Display");
 	ImGui::Checkbox("Full Screen", &m_optionFullScreen.userEnabled);
@@ -274,7 +247,7 @@ void Sodo::GUIOptionCommon()
 	ImGui::Checkbox("VRR", &m_optionTearing.userEnabled);
 	ImGui::EndDisabled();
 
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
+	ImGui::Dummy(m_imGuiSpacingSize);
 	ImGui::Separator();
 
 	ImGui::Text("Graphics");
@@ -285,7 +258,7 @@ void Sodo::GUIOptionCommon()
 	ImGui::Checkbox("Mesh Shader", &m_optionMeshShader.userEnabled);
 	ImGui::EndDisabled();
 
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
+	ImGui::Dummy(m_imGuiSpacingSize);
 	ImGui::Separator();
 
 	ImGui::Text("GUI");
@@ -296,7 +269,7 @@ void Sodo::GUIOptionCommon()
 		m_optionGUI.masterSize = 50 + 25 * selectedIndex;
 	}
 
-	ImGui::Dummy(m_imGuiSpacingBaseSize * m_optionGUI.GetMasterScale());
+	ImGui::Dummy(m_imGuiSpacingSize);
 	ImGui::Separator();
 
 	ImGui::Text("Sound");
@@ -322,30 +295,38 @@ void Sodo::GUIOptionCommon()
 	{
 		m_needResetGUI = true;
 	}
+
+	ImGui::End();
 }
 
-void Sodo::GUIExitCommon(GameState from, GameState to)
+void Sodo::GUICheckExitToWindow(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 {
-	ImGui::Dummy(m_imGuiSpacingBaseSize);
+	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+	ImGui::SetNextWindowSize(ImVec2(600.0f, 200.0f) * m_optionGUI.GetMasterScale(), ImGuiCond_Always);
 
-	bool noButtonClicked = ImGui::Button("No", m_imGuiSmallButtonBaseSize * m_optionGUI.GetMasterScale());
-	if (noButtonClicked == true)
+	ImGui::Begin("Check", nullptr, m_imGuiBasicFlag);
+
+	ImGui::Dummy(m_imGuiSpacingSize);
+
+	ImGui::Text("Do you really want to exit to window?");
+
+	ImGui::Dummy(m_imGuiSpacingSize);
+
+	bool noButtonClicked = ImGui::Button("No", m_imGuiSmallButtonSize);
+	bool escKeyPressed = ImGui::IsKeyPressed(ImGuiKey_Escape, false);
+	if (noButtonClicked == true || escKeyPressed == true)
 	{
-		m_gameState = from;
+		m_nowGameState = m_previousGameStates.top();
+		m_previousGameStates.pop();
 	}
 
 	ImGui::SameLine();
 
-	bool yesButtonClicked = ImGui::Button("Yes", m_imGuiSmallButtonBaseSize * m_optionGUI.GetMasterScale());
+	bool yesButtonClicked = ImGui::Button("Yes", m_imGuiSmallButtonSize);
 	if (yesButtonClicked == true)
 	{
-		if (to == GAME_STATE_TERMINATE)
-		{
-			DestroyWindow(m_hWnd);
-		}
-		else
-		{
-			m_gameState = to;
-		}
+		DestroyWindow(m_hWnd);
 	}
+
+	ImGui::End();
 }

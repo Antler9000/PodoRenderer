@@ -8,6 +8,7 @@
 #include <dxgicommon.h>
 #include <dxgiformat.h>
 #include <wrl/client.h>
+#include <stack>
 #include <string>
 #include <fstream>
 #include "imgui.h"
@@ -119,6 +120,7 @@ private:
 
 	void InitFactory();
 	void InitAdapterAndOutput();
+	bool InitOutput(IDXGIAdapter3* adapter);
 	void InitDevice();
 	void InitFence();
 	void InitFenceEvent();
@@ -160,10 +162,6 @@ private:
 
 private:
 
-	//RETURN : 창과 가장 넓은 면적이 겹치는 아웃풋이 어댑터 인자의 아웃풋 목록에 없으면 false를 반환함
-	bool FindMostIntersectingOutput(IDXGIAdapter3* adapter);
-	void CheckAndExit();
-
 	void ResetQueuedCommands();
 	void ResetDxgiInterface();
 	void ResetScreenSetting();
@@ -175,40 +173,32 @@ private:
 	bool OptionReadBool(std::ifstream& fin, std::string optionName, bool& outOptionEnabled);
 	bool OptionReadInt(std::ifstream& fin, std::string optionName, int& outOptionValue);
 
-	void GUIInGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUILobbyMenu(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUIPausedMenu(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUILobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
 	void GUILoadingToGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUIInGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUIPausedGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUICheckExitToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
 	void GUILoadingToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUIOptionFromLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUIOptionFromPaused(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUIExitFromLobbyToWindows(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUIExitFromPausedToWindows(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUIExitFromPausedToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUIOptionCommon();
-	void GUIExitCommon(GameState from, GameState to);
+	void GUIOption(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUICheckExitToWindow(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
 
 public:
 
 	//NOTE : ImGui에 넘겨주는 콜백 함수 속에서 기능해야 하므로 static으로 둠
-	static inline ImGuiDescriptorHeapAllocator	m_imGuiDescriptorHeapAllocator		= {};
+	static inline		ImGuiDescriptorHeapAllocator	m_imGuiDescriptorHeapAllocator		= {};
 
-	static constexpr UINT						m_screenBackBufferCount				= 2;
-	static constexpr DXGI_FORMAT				m_screenBackBufferFormatSDR			= DXGI_FORMAT_R8G8B8A8_UNORM;
-	static constexpr DXGI_FORMAT				m_screenBackBufferFormatHDR			= DXGI_FORMAT_R16G16B16A16_FLOAT;
-	static constexpr DXGI_COLOR_SPACE_TYPE		m_screenBackBufferColorSpaceSDR		= DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709;
-	static constexpr DXGI_COLOR_SPACE_TYPE		m_screenBackBufferColorSpaceHDR		= DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;
-	static constexpr DXGI_FORMAT				m_screenDepthStencilBufferFormat	= DXGI_FORMAT_D24_UNORM_S8_UINT;
+	static constexpr	UINT							m_screenBackBufferCount				= 2;
+	static constexpr	DXGI_FORMAT						m_screenBackBufferFormatSDR			= DXGI_FORMAT_R8G8B8A8_UNORM;
+	static constexpr	DXGI_FORMAT						m_screenBackBufferFormatHDR			= DXGI_FORMAT_R16G16B16A16_FLOAT;
+	static constexpr	DXGI_COLOR_SPACE_TYPE			m_screenBackBufferColorSpaceSDR		= DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709;
+	static constexpr	DXGI_COLOR_SPACE_TYPE			m_screenBackBufferColorSpaceHDR		= DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;
+	static constexpr	DXGI_FORMAT						m_screenDepthStencilBufferFormat	= DXGI_FORMAT_D24_UNORM_S8_UINT;
 
-	static constexpr UINT						m_inputDragThresholdDist			= 20;
+	static constexpr	unsigned int					m_inputDragThresholdDist			= 20;
 
-	static constexpr ImVec2						m_imGuiSpacingBaseSize				= ImVec2(0.0f, 10.0f);
-	static constexpr ImVec2						m_imGuiSmallButtonBaseSize			= ImVec2(120.0f, 40.0f);
-	static constexpr ImVec2						m_imGuiMediumButtonBaseSize			= ImVec2(240.0f, 40.0f);
-	static constexpr ImVec2						m_imguiLargeButtonBaseSize			= ImVec2(360.0f, 40.0f);
-	static constexpr UINT						m_imGuiDescriptorHeapCapacity		= 64;
-	static constexpr ImGuiWindowFlags			m_imGuiBasicFlag					= ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
-																					| ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings;
+	static constexpr	UINT							m_imGuiDescriptorHeapCapacity		= 64;
+	static constexpr	ImGuiWindowFlags				m_imGuiBasicFlag					= ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
+																							| ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings;
 
 private:
 
@@ -261,47 +251,51 @@ private:
 	CD3DX12_CPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSCpuStartHandleForGame;
 	CD3DX12_GPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSGpuStartHandleForGame;
 	
-	OptionFullScreen					m_optionFullScreen;
-	OptionHDR							m_optionHDR;
-	OptionTearing						m_optionTearing;
-	OptionGUI							m_optionGUI;
-	OptionRayTracing					m_optionRayTracing;
-	OptionMeshShader					m_optionMeshShader;
-	OptionSound							m_optionSound;
+	OptionFullScreen		m_optionFullScreen;
+	OptionHDR				m_optionHDR;
+	OptionTearing			m_optionTearing;
+	OptionGUI				m_optionGUI;
+	OptionRayTracing		m_optionRayTracing;
+	OptionMeshShader		m_optionMeshShader;
+	OptionSound				m_optionSound;
 
-	bool		m_imGuiInitialized					= false;
+	bool					m_imGuiInitialized					= false;
+	ImVec2					m_imGuiSpacingSize					= ImVec2(0.0f, 10.0f);
+	ImVec2					m_imGuiSmallButtonSize				= ImVec2(120.0f, 40.0f);
+	ImVec2					m_imGuiMediumButtonSize				= ImVec2(240.0f, 40.0f);
+	ImVec2					m_imGuiLargeButtonSize				= ImVec2(360.0f, 40.0f);
 
-	void		TimersReset()						{ m_timerTotal.Reset(); m_timerCaption.Reset(); m_timerFrame.Reset(); }
-	void		TimersStop()						{ if (IsStopped() == true) { m_timerTotal.Stop(); m_timerCaption.Stop(); m_timerFrame.Stop(); } }
-	void		TimersStart()						{ if (IsStopped() == false) { m_timerTotal.Start(); m_timerCaption.Start(); m_timerFrame.Start(); } }
-	Timer		m_timerTotal;
-	Timer		m_timerCaption;
-	Timer		m_timerFrame;
+	void					TimersReset()						{ m_timerTotal.Reset(); m_timerCaption.Reset(); m_timerFrame.Reset(); }
+	void					TimersStop()						{ if (IsStopped() == true) { m_timerTotal.Stop(); m_timerCaption.Stop(); m_timerFrame.Stop(); } }
+	void					TimersStart()						{ if (IsStopped() == false) { m_timerTotal.Start(); m_timerCaption.Start(); m_timerFrame.Start(); } }
+	Timer					m_timerTotal;
+	Timer					m_timerCaption;
+	Timer					m_timerFrame;
 	
-	bool		IsStopped()	const					{ return m_isResizing || m_isMoving || m_isInactive; }
-	bool		m_isResizing						= false;
-	bool		m_isMoving							= false;
-	bool		m_isInactive						= false;
+	bool					IsStopped()	const					{ return m_isResizing || m_isMoving || m_isInactive; }
+	bool					m_isResizing						= false;
+	bool					m_isMoving							= false;
+	bool					m_isInactive						= false;
 
-	bool		NeedResetDxgiInterface() const		{ return (m_dxgiFactory->IsCurrent() == FALSE) || m_needResetAdapterAndOutput; }
-	bool		m_needResetAdapterAndOutput			= false;
-	bool		NeedResetScreenSetting() const		{ return m_needResetScreenMode || m_needResetScreenResolution || m_needResetHDR || m_needResetGUI; }
-	bool		m_needResetScreenMode				= false;
-	bool		m_needResetScreenResolution			= false;
-	bool		m_needResetHDR						= false;
-	bool		m_needResetGUI						= false;
+	bool					NeedResetDxgiInterface() const		{ return (m_dxgiFactory->IsCurrent() == FALSE) || m_needResetAdapterAndOutput; }
+	bool					m_needResetAdapterAndOutput			= false;
+	bool					NeedResetScreenSetting() const		{ return m_needResetScreenMode || m_needResetScreenResolution || m_needResetHDR || m_needResetGUI; }
+	bool					m_needResetScreenMode				= false;
+	bool					m_needResetScreenResolution			= false;
+	bool					m_needResetHDR						= false;
+	bool					m_needResetGUI						= false;
 
-	INT			m_previousWindowPosX				= 0; 
-	INT			m_previousWindowPosY				= 0;
-	INT			m_previousWindowWidth				= 1600;
-	INT			m_previousWindowHeight				= 900;
+	LONG					m_previousWindowPosX				= 0; 
+	LONG					m_previousWindowPosY				= 0;
+	LONG					m_previousWindowWidth				= 1600;
+	LONG					m_previousWindowHeight				= 900;
 
-	POINT		m_inputMousePositionClient			= { 0, 0 };
-	POINT		m_inputMouseClickedPositionClient	= { 0, 0 };
-	bool		m_inputIsClicked					= false;
-	int			m_inputScrollDelta					= 0;
+	POINT					m_inputMousePositionClient			= { 0, 0 };
+	POINT					m_inputMouseClickedPositionClient	= { 0, 0 };
+	bool					m_inputIsClicked					= false;
+	int						m_inputScrollDelta					= 0;
 
-	GameState	m_gameState							= GAME_STATE_LOBBY;
-	bool		m_gameNeedAlive						= false;
-	bool		m_gameNeedSave						= false;
+	bool					GameNeedSave()						{ return (m_nowGameState == GAME_STATE_IN_GAME) || (m_nowGameState == GAME_STATE_PAUSED_GAME) || ((m_nowGameState == GAME_STATE_OPTION) && (m_previousGameStates.top() == GAME_STATE_PAUSED_GAME)); }
+	GameState				m_nowGameState						= GAME_STATE_LOBBY;
+	std::stack<GameState>	m_previousGameStates;
 };

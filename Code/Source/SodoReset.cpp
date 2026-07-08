@@ -93,7 +93,7 @@ void Sodo::ResetScreenSetting()
 	{
 		ResetQueuedCommands();
 
-		for (int i = 0; i < m_screenBackBufferCount; i++)
+		for (UINT i = 0; i < m_screenBackBufferCount; i++)
 		{
 			m_screenBackBuffers[i].Reset();
 		}
@@ -135,10 +135,10 @@ void Sodo::ResetScreenSetting()
 
 void Sodo::ResetToFullScreenMode()
 {
-	INT tempPreviousWindowPosX = 0;
-	INT tempPreviousWindowPosY = 0;
-	INT tempPreviousWindowWidth = 0;
-	INT tempPreviousWindowHeight = 0;
+	LONG tempPreviousWindowPosX = 0;
+	LONG tempPreviousWindowPosY = 0;
+	LONG tempPreviousWindowWidth = 0;
+	LONG tempPreviousWindowHeight = 0;
 	RECT rectWindow = {};
 	BOOL queryResult = GetWindowRect(m_hWnd, &rectWindow);
 	if (queryResult != FALSE)
