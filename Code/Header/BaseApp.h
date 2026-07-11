@@ -61,20 +61,20 @@ public:
 
 		m_hInstance = hInstance;
 
-		const wchar_t* m_pClassName = L"Window Class";
+		const wchar_t* windowClassName = L"Window Class";
 
 		WNDCLASS wc = { };
 		wc.style = CS_HREDRAW | CS_VREDRAW;
 		wc.lpfnWndProc = BaseApp::WindowProcedure;
 		wc.hInstance = hInstance;
 		wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-		wc.lpszClassName = m_pClassName;
+		wc.lpszClassName = windowClassName;
 
 		ThrowIfFalse(RegisterClass(&wc));
 
 		m_hWnd = CreateWindowEx(
 			0,
-			m_pClassName,
+			windowClassName,
 			m_pAppName,
 			WS_OVERLAPPEDWINDOW,
 			CW_USEDEFAULT,

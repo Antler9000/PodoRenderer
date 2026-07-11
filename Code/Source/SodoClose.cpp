@@ -22,4 +22,6 @@ void Sodo::CloseImGui()
 	ImGui::DestroyContext();
 
 	m_imGuiDescriptorHeapAllocator.Destroy();
+
+	m_imGuiInitialized = false;
 }

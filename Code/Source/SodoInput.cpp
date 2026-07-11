@@ -238,8 +238,8 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			if (GameNeedSave() == true)
 			{
-				m_previousGameStates.push(m_nowGameState);
-				m_nowGameState = GAME_STATE_CHECK_EXIT_TO_WINDOW;
+				m_previousGameStates.push(m_presentGameState);
+				m_presentGameState = GAME_STATE_CHECK_EXIT_TO_WINDOW;
 			}
 			else
 			{

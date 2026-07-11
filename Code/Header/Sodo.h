@@ -120,7 +120,7 @@ private:
 
 	void InitFactory();
 	void InitAdapterAndOutput();
-	bool InitOutput(IDXGIAdapter3* adapter);
+	bool InitOutput(IDXGIAdapter3* pAdapter);
 	void InitDevice();
 	void InitFence();
 	void InitFenceEvent();
@@ -173,14 +173,14 @@ private:
 	bool OptionReadBool(std::ifstream& fin, std::string optionName, bool& outOptionEnabled);
 	bool OptionReadInt(std::ifstream& fin, std::string optionName, int& outOptionValue);
 
-	void GUILobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUILoadingToGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUIInGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUIPausedGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUICheckExitToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUILoadingToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUIOption(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUICheckExitToWindow(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUILobby(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUILoadingToGame(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUIInGame(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUIPausedGame(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUICheckExitToLobby(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUILoadingToLobby(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUIOption(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void GUICheckExitToWindow(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
 
 public:
 
@@ -295,7 +295,7 @@ private:
 	bool					m_inputIsClicked					= false;
 	int						m_inputScrollDelta					= 0;
 
-	bool					GameNeedSave()						{ return (m_nowGameState == GAME_STATE_IN_GAME) || (m_nowGameState == GAME_STATE_PAUSED_GAME) || ((m_nowGameState == GAME_STATE_OPTION) && (m_previousGameStates.top() == GAME_STATE_PAUSED_GAME)); }
-	GameState				m_nowGameState						= GAME_STATE_LOBBY;
+	bool					GameNeedSave()						{ return (m_presentGameState == GAME_STATE_IN_GAME) || (m_presentGameState == GAME_STATE_PAUSED_GAME) || ((m_presentGameState == GAME_STATE_OPTION) && (m_previousGameStates.top() == GAME_STATE_PAUSED_GAME)); }
+	GameState				m_presentGameState					= GAME_STATE_LOBBY;
 	std::stack<GameState>	m_previousGameStates;
 };

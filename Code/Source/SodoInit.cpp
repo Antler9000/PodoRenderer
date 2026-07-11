@@ -71,10 +71,10 @@ void Sodo::InitAdapterAndOutput()
 		}
 	}
 
-	throw std::runtime_error("can't find adapter that connected with most intersecting output");
+	throw std::runtime_error("can't find pAdapter that connected with most intersecting output");
 }
 
-bool Sodo::InitOutput(IDXGIAdapter3* adapter)
+bool Sodo::InitOutput(IDXGIAdapter3* pAdapter)
 {
 	m_dxgiOutput.Reset();
 	m_dxgiOutput6.Reset();
@@ -87,7 +87,7 @@ bool Sodo::InitOutput(IDXGIAdapter3* adapter)
 	HRESULT result = S_OK;
 	for (int i = 0; result != DXGI_ERROR_NOT_FOUND; i++)
 	{
-		result = adapter->EnumOutputs(i, tempOutput.ReleaseAndGetAddressOf());
+		result = pAdapter->EnumOutputs(i, tempOutput.ReleaseAndGetAddressOf());
 
 		if (SUCCEEDED(result) == true)
 		{
@@ -578,13 +578,13 @@ void Sodo::InitImGui()
 	initInfo.RTVFormat = m_optionHDR.IsActive() ? m_screenBackBufferFormatHDR : m_screenBackBufferFormatSDR;
 
 	initInfo.SrvDescriptorHeap = m_descriptorHeapCBVSRVUAV.Get();
-	initInfo.SrvDescriptorAllocFn = [](ImGui_ImplDX12_InitInfo*, D3D12_CPU_DESCRIPTOR_HANDLE* out_cpu_handle, D3D12_GPU_DESCRIPTOR_HANDLE* out_gpu_handle)
+	initInfo.SrvDescriptorAllocFn = [](ImGui_ImplDX12_InitInfo*, D3D12_CPU_DESCRIPTOR_HANDLE* pOutCpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE* outGpuHandle)
 		{ 
-			return m_imGuiDescriptorHeapAllocator.Alloc(out_cpu_handle, out_gpu_handle);
+			return m_imGuiDescriptorHeapAllocator.Alloc(pOutCpuHandle, outGpuHandle);
 		};
-	initInfo.SrvDescriptorFreeFn = [](ImGui_ImplDX12_InitInfo*, D3D12_CPU_DESCRIPTOR_HANDLE cpu_handle, D3D12_GPU_DESCRIPTOR_HANDLE gpu_handle)
+	initInfo.SrvDescriptorFreeFn = [](ImGui_ImplDX12_InitInfo*, D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle)
 		{
-		return m_imGuiDescriptorHeapAllocator.Free(cpu_handle, gpu_handle);
+		return m_imGuiDescriptorHeapAllocator.Free(cpuHandle, gpuHandle);
 		};
 	
 	IMGUI_CHECKVERSION();

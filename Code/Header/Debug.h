@@ -22,7 +22,7 @@ private:
 	static std::string ErrorString(std::string result, std::string statement, const std::source_location& location)
 	{
 		return std::format(
-			"result : {}\n\n"
+			"pResult : {}\n\n"
 			"statement : {}\n\n"
 			"function : {}\n\n"
 			"file : {}\n\n"
@@ -45,36 +45,36 @@ private:
 		return result ? "true" : "false";
 	}
 
-	static std::string ResultString(void* result)
+	static std::string ResultString(void* pResult)
 	{
-		return std::format("0x{:p}", static_cast<const void*>(result));
+		return std::format("0x{:p}", static_cast<const void*>(pResult));
 	}
 };
 
 #define ThrowIfFailed(statement)\
 {\
-	HRESULT result = (statement);\
-	if (FAILED(result) == true)\
+	HRESULT pResult = (statement);\
+	if (FAILED(pResult) == true)\
 	{\
-		throw SodoException(result, #statement, std::source_location::current());\
+		throw SodoException(pResult, #statement, std::source_location::current());\
 	}\
 }
 
 #define ThrowIfFalse(statement)\
 {\
-	bool result = (statement);\
-	if (result == false)\
+	bool pResult = (statement);\
+	if (pResult == false)\
 	{\
-		throw SodoException(result, #statement, std::source_location::current());\
+		throw SodoException(pResult, #statement, std::source_location::current());\
 	}\
 }
 
 #define ThrowIfNull(statement)\
 {\
-	void* result = (statement);\
-	if(result == nullptr)\
+	void* pResult = (statement);\
+	if(pResult == nullptr)\
 	{\
-		throw SodoException(result, #statement, std::source_location::current());\
+		throw SodoException(pResult, #statement, std::source_location::current());\
 	}\
 }
 

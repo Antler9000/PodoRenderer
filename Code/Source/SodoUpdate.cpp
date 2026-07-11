@@ -60,68 +60,68 @@ void Sodo::UpdateImGui()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 	
-	ImGuiViewport* imGuiViewPort = ImGui::GetMainViewport();
-	ImVec2 imGuiCenterPos = imGuiViewPort->GetCenter();
+	ImGuiViewport* pImGuiViewPort = ImGui::GetMainViewport();
+	ImVec2 imGuiCenterPos = pImGuiViewPort->GetCenter();
 
 	m_imGuiSpacingSize = ImVec2(0.0f, 10.0f) * m_optionGUI.GetMasterScale();
 	m_imGuiSmallButtonSize = ImVec2(120.0f, 40.0f) * m_optionGUI.GetMasterScale();
 	m_imGuiMediumButtonSize = ImVec2(240.0f, 40.0f) * m_optionGUI.GetMasterScale();
 	m_imGuiLargeButtonSize = ImVec2(360.0f, 40.0f) * m_optionGUI.GetMasterScale();
 
-	switch (m_nowGameState)
+	switch (m_presentGameState)
 	{
 		case GAME_STATE_LOBBY:
 		{
-			GUILobby(imGuiViewPort, imGuiCenterPos);
+			GUILobby(pImGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
 
 		case GAME_STATE_LOADING_TO_GAME:
 		{
-			GUILoadingToGame(imGuiViewPort, imGuiCenterPos);
+			GUILoadingToGame(pImGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
 		
 		case GAME_STATE_IN_GAME:
 		{
-			GUIInGame(imGuiViewPort, imGuiCenterPos);
+			GUIInGame(pImGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
 
 		case GAME_STATE_PAUSED_GAME:
 		{
-			GUIPausedGame(imGuiViewPort, imGuiCenterPos);
+			GUIPausedGame(pImGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
 
 		case GAME_STATE_CHECK_EXIT_TO_LOBBY:
 		{
-			GUICheckExitToLobby(imGuiViewPort, imGuiCenterPos);
+			GUICheckExitToLobby(pImGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
 
 		case GAME_STATE_LOADING_TO_LOBBY:
 		{
-			GUILoadingToLobby(imGuiViewPort, imGuiCenterPos);
+			GUILoadingToLobby(pImGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
 
 		case GAME_STATE_OPTION:
 		{
-			GUIOption(imGuiViewPort, imGuiCenterPos);
+			GUIOption(pImGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
 
 		case GAME_STATE_CHECK_EXIT_TO_WINDOW:
 		{
-			GUICheckExitToWindow(imGuiViewPort, imGuiCenterPos);
+			GUICheckExitToWindow(pImGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
@@ -154,8 +154,8 @@ void Sodo::UpdateScreen()
 		
 
 	FLOAT sinZeroToOne = (XMScalarSin(static_cast<float>(m_timerTotal.GetTimeMilli()) / 1000) + 1) / 2;
-	FLOAT testColor[4] = { sinZeroToOne, sinZeroToOne, sinZeroToOne, 1.0f };
-	m_commandList->ClearRenderTargetView(cpuHandleRTV, testColor, 0, nullptr);
+	FLOAT pTestColor[4] = { sinZeroToOne, sinZeroToOne, sinZeroToOne, 1.0f };
+	m_commandList->ClearRenderTargetView(cpuHandleRTV, pTestColor, 0, nullptr);
 	m_commandList->ClearDepthStencilView(
 		m_descriptorHeapDSVCpuStartHandle,
 		D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,

@@ -6,7 +6,7 @@
 #include "Sodo.h"
 #include "Game.h"
 
-void Sodo::GUILobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUILobby(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 	ImGui::SetNextWindowSize(ImVec2(250.0f, 330.0f) * m_optionGUI.GetMasterScale(), ImGuiCond_Always);
@@ -19,7 +19,7 @@ void Sodo::GUILobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 	if (playButtonClicked == true)
 	{
 		m_previousGameStates = std::stack<GameState>();
-		m_nowGameState = GAME_STATE_LOADING_TO_GAME;
+		m_presentGameState = GAME_STATE_LOADING_TO_GAME;
 	}
 
 	ImGui::Dummy(m_imGuiSpacingSize);
@@ -29,8 +29,8 @@ void Sodo::GUILobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 	bool optionButtonClicked = ImGui::Button("Option", m_imGuiSmallButtonSize);
 	if (optionButtonClicked == true)
 	{
-		m_previousGameStates.push(m_nowGameState);
-		m_nowGameState = GAME_STATE_OPTION;
+		m_previousGameStates.push(m_presentGameState);
+		m_presentGameState = GAME_STATE_OPTION;
 	}
 
 	ImGui::Dummy(m_imGuiSpacingSize);
@@ -40,20 +40,20 @@ void Sodo::GUILobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 	bool exitButtonClicked = ImGui::Button("Exit", m_imGuiSmallButtonSize);
 	if (exitButtonClicked == true)
 	{
-		m_previousGameStates.push(m_nowGameState);
-		m_nowGameState = GAME_STATE_CHECK_EXIT_TO_WINDOW;
+		m_previousGameStates.push(m_presentGameState);
+		m_presentGameState = GAME_STATE_CHECK_EXIT_TO_WINDOW;
 	}
 
 	ImGui::End();
 }
 
-void Sodo::GUILoadingToGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUILoadingToGame(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGuiWindowFlags loadingGuiFlag = m_imGuiBasicFlag | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground;
 
 	ImVec2 pos = ImVec2(
 		imGuiCenterPos.x,
-		imGuiViewPort->Pos.y + imGuiViewPort->Size.y * 0.9f
+		pImGuiViewPort->Pos.y + pImGuiViewPort->Size.y * 0.9f
 	);
 
 	ImGui::SetNextWindowPos(pos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
@@ -67,22 +67,22 @@ void Sodo::GUILoadingToGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 	if (startButtonClicked == true)
 	{
 		m_previousGameStates = std::stack<GameState>();
-		m_nowGameState = GAME_STATE_IN_GAME;
+		m_presentGameState = GAME_STATE_IN_GAME;
 	}
 
 	ImGui::End();
 }
 
-void Sodo::GUIInGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUIInGame(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImVec2 pos = ImVec2(
-		imGuiViewPort->Pos.x,
-		imGuiViewPort->Pos.y + imGuiViewPort->Size.y * 0.75f
+		pImGuiViewPort->Pos.x,
+		pImGuiViewPort->Pos.y + pImGuiViewPort->Size.y * 0.75f
 	);
 
 	ImVec2 size = ImVec2(
-		imGuiViewPort->Size.x,
-		imGuiViewPort->Size.y * 0.25f
+		pImGuiViewPort->Size.x,
+		pImGuiViewPort->Size.y * 0.25f
 	);
 
 	ImGui::SetNextWindowPos(pos, ImGuiCond_Always);
@@ -95,14 +95,14 @@ void Sodo::GUIInGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 	bool menuButtonClicked = ImGui::Button("Menu", m_imGuiSmallButtonSize);
 	if (menuButtonClicked == true)
 	{
-		m_previousGameStates.push(m_nowGameState);
-		m_nowGameState = GAME_STATE_PAUSED_GAME;
+		m_previousGameStates.push(m_presentGameState);
+		m_presentGameState = GAME_STATE_PAUSED_GAME;
 	}
 
 	ImGui::End();
 }
 
-void Sodo::GUIPausedGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUIPausedGame(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 	ImGui::SetNextWindowSize(ImVec2(300.0f, 430.0f) * m_optionGUI.GetMasterScale(), ImGuiCond_Always);
@@ -115,8 +115,11 @@ void Sodo::GUIPausedGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 	bool escKeyPressed = ImGui::IsKeyPressed(ImGuiKey_Escape, false);
 	if (resumeButtonClicked == true || escKeyPressed == true)
 	{
-		m_nowGameState = m_previousGameStates.top();
-		m_previousGameStates.pop();
+		if (m_previousGameStates.empty() == false)
+		{
+			m_presentGameState = m_previousGameStates.top();
+			m_previousGameStates.pop();
+		}
 	}
 
 	ImGui::Dummy(m_imGuiSpacingSize);
@@ -126,8 +129,8 @@ void Sodo::GUIPausedGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 	bool optionButtonClicked = ImGui::Button("Option", m_imGuiSmallButtonSize);
 	if (optionButtonClicked == true)
 	{
-		m_previousGameStates.push(m_nowGameState);
-		m_nowGameState = GAME_STATE_OPTION;
+		m_previousGameStates.push(m_presentGameState);
+		m_presentGameState = GAME_STATE_OPTION;
 	}
 
 	ImGui::Dummy(m_imGuiSpacingSize);
@@ -137,8 +140,8 @@ void Sodo::GUIPausedGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 	bool exitToLobbyButtonClicked = ImGui::Button("Exit to lobby", m_imGuiMediumButtonSize);
 	if (exitToLobbyButtonClicked == true)
 	{
-		m_previousGameStates.push(m_nowGameState);
-		m_nowGameState = GAME_STATE_CHECK_EXIT_TO_LOBBY;
+		m_previousGameStates.push(m_presentGameState);
+		m_presentGameState = GAME_STATE_CHECK_EXIT_TO_LOBBY;
 	}
 
 	ImGui::Dummy(m_imGuiSpacingSize);
@@ -148,14 +151,14 @@ void Sodo::GUIPausedGame(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 	bool exitToWindowButtonClicked = ImGui::Button("Exit to window", m_imGuiMediumButtonSize);
 	if (exitToWindowButtonClicked == true)
 	{
-		m_previousGameStates.push(m_nowGameState);
-		m_nowGameState = GAME_STATE_CHECK_EXIT_TO_WINDOW;
+		m_previousGameStates.push(m_presentGameState);
+		m_presentGameState = GAME_STATE_CHECK_EXIT_TO_WINDOW;
 	}
 
 	ImGui::End();
 }
 
-void Sodo::GUICheckExitToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUICheckExitToLobby(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 	ImGui::SetNextWindowSize(ImVec2(600.0f, 200.0f) * m_optionGUI.GetMasterScale(), ImGuiCond_Always);
@@ -172,8 +175,11 @@ void Sodo::GUICheckExitToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterP
 	bool escKeyPressed = ImGui::IsKeyPressed(ImGuiKey_Escape, false);
 	if (noButtonClicked == true || escKeyPressed == true)
 	{
-		m_nowGameState = m_previousGameStates.top();
-		m_previousGameStates.pop();
+		if (m_previousGameStates.empty() == false)
+		{
+			m_presentGameState = m_previousGameStates.top();
+			m_previousGameStates.pop();
+		}
 	}
 
 	ImGui::SameLine();
@@ -182,19 +188,19 @@ void Sodo::GUICheckExitToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterP
 	if (yesButtonClicked == true)
 	{
 		m_previousGameStates = std::stack<GameState>();
-		m_nowGameState = GAME_STATE_LOADING_TO_LOBBY;
+		m_presentGameState = GAME_STATE_LOADING_TO_LOBBY;
 	}
 
 	ImGui::End();
 }
 
-void Sodo::GUILoadingToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUILoadingToLobby(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGuiWindowFlags loadingGuiFlag = m_imGuiBasicFlag | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground;
 
 	ImVec2 pos = ImVec2(
 		imGuiCenterPos.x,
-		imGuiViewPort->Pos.y + imGuiViewPort->Size.y * 0.9f
+		pImGuiViewPort->Pos.y + pImGuiViewPort->Size.y * 0.9f
 	);
 
 	ImGui::SetNextWindowPos(pos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
@@ -208,13 +214,13 @@ void Sodo::GUILoadingToLobby(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos
 	if (endButtonClicked == true)
 	{
 		m_previousGameStates = std::stack<GameState>();
-		m_nowGameState = GAME_STATE_LOBBY;
+		m_presentGameState = GAME_STATE_LOBBY;
 	}
 
 	ImGui::End();
 }
 
-void Sodo::GUIOption(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUIOption(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 	ImGui::SetNextWindowSize(ImVec2(700.0f, 850.0f) * m_optionGUI.GetMasterScale(), ImGuiCond_Always);
@@ -227,8 +233,11 @@ void Sodo::GUIOption(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 	{
 		OptionSave();
 
-		m_nowGameState = m_previousGameStates.top();
-		m_previousGameStates.pop();
+		if (m_previousGameStates.empty() == false)
+		{
+			m_presentGameState = m_previousGameStates.top();
+			m_previousGameStates.pop();
+		}
 	}
 
 	bool previousFullScreenState = m_optionFullScreen.IsActive();
@@ -262,9 +271,9 @@ void Sodo::GUIOption(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 	ImGui::Separator();
 
 	ImGui::Text("GUI");
-	const char* masterSizeStrings[] = { "50%", "75%", "100%", "125%", "150%" };
+	const char* masterSizeStringArray[] = { "50%", "75%", "100%", "125%", "150%" };
 	int selectedIndex = (m_optionGUI.masterSize - 50) / 25;
-	if (ImGui::Combo("Master Size", &selectedIndex, masterSizeStrings, _countof(masterSizeStrings)) == true)
+	if (ImGui::Combo("Master Size", &selectedIndex, masterSizeStringArray, _countof(masterSizeStringArray)) == true)
 	{
 		m_optionGUI.masterSize = 50 + 25 * selectedIndex;
 	}
@@ -299,7 +308,7 @@ void Sodo::GUIOption(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
 	ImGui::End();
 }
 
-void Sodo::GUICheckExitToWindow(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenterPos)
+void Sodo::GUICheckExitToWindow(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGui::SetNextWindowPos(imGuiCenterPos, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 	ImGui::SetNextWindowSize(ImVec2(600.0f, 200.0f) * m_optionGUI.GetMasterScale(), ImGuiCond_Always);
@@ -316,8 +325,11 @@ void Sodo::GUICheckExitToWindow(ImGuiViewport* imGuiViewPort, ImVec2 imGuiCenter
 	bool escKeyPressed = ImGui::IsKeyPressed(ImGuiKey_Escape, false);
 	if (noButtonClicked == true || escKeyPressed == true)
 	{
-		m_nowGameState = m_previousGameStates.top();
-		m_previousGameStates.pop();
+		if (m_previousGameStates.empty() == false)
+		{
+			m_presentGameState = m_previousGameStates.top();
+			m_previousGameStates.pop();
+		}
 	}
 
 	ImGui::SameLine();
