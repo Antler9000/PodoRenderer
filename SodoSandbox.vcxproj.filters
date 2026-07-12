@@ -116,9 +116,6 @@
     <ClCompile Include="Code\Source\SodoClose.cpp">
       <Filter>Code\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Source\SodoGUI.cpp">
-      <Filter>Code\Source</Filter>
-    </ClCompile>
     <ClCompile Include="Code\Source\SodoOption.cpp">
       <Filter>Code\Source</Filter>
     </ClCompile>

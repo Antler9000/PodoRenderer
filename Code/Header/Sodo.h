@@ -61,7 +61,7 @@ public:
 		InitDSV();
 		InitCBVSRVUAV();
 		InitImGui();
-		InitTimer();
+		InitTimers();
 
 		m_optionFullScreen.DebugPrint();
 		m_optionHDR.DebugPrint();
@@ -93,16 +93,16 @@ public:
 			}
 			else
 			{
-				if (IsStopped() == true)
+				if (IsUpdateStopped() == true)
 				{
 					Sleep(100);
 				}
 				else
 				{
-					UpdateTimers();
-					UpdateCaption();
-					UpdateImGui();
-					UpdateScreen();
+					UpdateWorldTimers();
+					UpdateWorld();
+					UpdateSceneAndGUI();
+					UpdateDebugCaption();
 				}
 			}
 		}
@@ -143,12 +143,21 @@ private:
 	void InitDSV();
 	void InitCBVSRVUAV();
 	void InitImGui();
-	void InitTimer();
+	void InitTimers();
 
-	void UpdateTimers();
-	void UpdateCaption();
-	void UpdateImGui();
-	void UpdateScreen();
+	void UpdateWorldTimers();
+	void UpdateWorld();
+	void UpdateSceneAndGUI();
+	void UpdateGUI();
+	void UpdateGUILobby(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void UpdateGUILoadingToGame(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void UpdateGUIInGame(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void UpdateGUIPausedGame(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void UpdateGUICheckExitToLobby(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void UpdateGUILoadingToLobby(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void UpdateGUIOption(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void UpdateGUICheckExitToWindow(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void UpdateDebugCaption();
 
 	void InputMouseMove(WPARAM wParam, LPARAM lParam);
 	void InputMouseLeftButtonDown(WPARAM wParam, LPARAM lParam);
@@ -173,19 +182,12 @@ private:
 	bool OptionReadBool(std::ifstream& fin, std::string optionName, bool& outOptionEnabled);
 	bool OptionReadInt(std::ifstream& fin, std::string optionName, int& outOptionValue);
 
-	void GUILobby(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUILoadingToGame(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUIInGame(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUIPausedGame(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUICheckExitToLobby(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUILoadingToLobby(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUIOption(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
-	void GUICheckExitToWindow(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
-
 public:
 
 	//NOTE : ImGui에 넘겨주는 콜백 함수 속에서 기능해야 하므로 static으로 둠
 	static inline		ImGuiDescriptorHeapAllocator	m_imGuiDescriptorHeapAllocator		= {};
+
+public:
 
 	static constexpr	UINT							m_screenBackBufferCount				= 2;
 	static constexpr	DXGI_FORMAT						m_screenBackBufferFormatSDR			= DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -194,11 +196,11 @@ public:
 	static constexpr	DXGI_COLOR_SPACE_TYPE			m_screenBackBufferColorSpaceHDR		= DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;
 	static constexpr	DXGI_FORMAT						m_screenDepthStencilBufferFormat	= DXGI_FORMAT_D24_UNORM_S8_UINT;
 
-	static constexpr	unsigned int					m_inputDragThresholdDist			= 20;
-
 	static constexpr	UINT							m_imGuiDescriptorHeapCapacity		= 64;
 	static constexpr	ImGuiWindowFlags				m_imGuiBasicFlag					= ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
 																							| ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings;
+
+	static constexpr	unsigned int					m_inputDragThresholdDist			= 20;
 
 private:
 
@@ -251,51 +253,55 @@ private:
 	CD3DX12_CPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSCpuStartHandleForGame;
 	CD3DX12_GPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSGpuStartHandleForGame;
 	
-	OptionFullScreen		m_optionFullScreen;
-	OptionHDR				m_optionHDR;
-	OptionTearing			m_optionTearing;
-	OptionGUI				m_optionGUI;
-	OptionRayTracing		m_optionRayTracing;
-	OptionMeshShader		m_optionMeshShader;
-	OptionSound				m_optionSound;
+	bool								m_imGuiInitialized									= false;
+	ImVec2								m_imGuiSpacingSize									= ImVec2(0.0f, 10.0f);
+	ImVec2								m_imGuiSmallButtonSize								= ImVec2(120.0f, 40.0f);
+	ImVec2								m_imGuiMediumButtonSize								= ImVec2(240.0f, 40.0f);
+	ImVec2								m_imGuiLargeButtonSize								= ImVec2(360.0f, 40.0f);
 
-	bool					m_imGuiInitialized					= false;
-	ImVec2					m_imGuiSpacingSize					= ImVec2(0.0f, 10.0f);
-	ImVec2					m_imGuiSmallButtonSize				= ImVec2(120.0f, 40.0f);
-	ImVec2					m_imGuiMediumButtonSize				= ImVec2(240.0f, 40.0f);
-	ImVec2					m_imGuiLargeButtonSize				= ImVec2(360.0f, 40.0f);
+	bool								IsUpdateStopped() const								{ return (IsWorldStopped() && IsSceneAndGUIStopped()); }
+	bool								IsWorldStopped() const								{ return (m_gameStatePresent != GAME_STATE_IN_GAME); }
+	bool								IsSceneAndGUIStopped() const						{ return m_isWindowResizing || m_isWindowMoving || m_isWindowMinimized; }
+	bool								m_isWindowResizing									= false;
+	bool								m_isWindowMoving									= false;
+	bool								m_isWindowMinimized									= false;
 
-	void					TimersReset()						{ m_timerTotal.Reset(); m_timerCaption.Reset(); m_timerFrame.Reset(); }
-	void					TimersStop()						{ if (IsStopped() == true) { m_timerTotal.Stop(); m_timerCaption.Stop(); m_timerFrame.Stop(); } }
-	void					TimersStart()						{ if (IsStopped() == false) { m_timerTotal.Start(); m_timerCaption.Start(); m_timerFrame.Start(); } }
-	Timer					m_timerTotal;
-	Timer					m_timerCaption;
-	Timer					m_timerFrame;
-	
-	bool					IsStopped()	const					{ return m_isResizing || m_isMoving || m_isInactive; }
-	bool					m_isResizing						= false;
-	bool					m_isMoving							= false;
-	bool					m_isInactive						= false;
+	void								WorldTimersReset()									{ m_worldTimerTotal.Reset(); m_worldTimerFrame.Reset(); }
+	void								WorldTimersStop()									{ m_worldTimerTotal.Stop(); m_worldTimerFrame.Stop(); }
+	void								WorldTimersStart()									{ m_worldTimerTotal.Start(); m_worldTimerFrame.Start(); }
+	Timer								m_worldTimerTotal;
+	Timer								m_worldTimerFrame;
 
-	bool					NeedResetDxgiInterface() const		{ return (m_dxgiFactory->IsCurrent() == FALSE) || m_needResetAdapterAndOutput; }
-	bool					m_needResetAdapterAndOutput			= false;
-	bool					NeedResetScreenSetting() const		{ return m_needResetScreenMode || m_needResetScreenResolution || m_needResetHDR || m_needResetGUI; }
-	bool					m_needResetScreenMode				= false;
-	bool					m_needResetScreenResolution			= false;
-	bool					m_needResetHDR						= false;
-	bool					m_needResetGUI						= false;
+	bool								GameNeedSave()										{ return (m_gameStatePresent == GAME_STATE_IN_GAME) || (m_gameStatePresent == GAME_STATE_PAUSED_GAME) || ((m_gameStatePresent == GAME_STATE_OPTION) && (m_gameStatesPrevious.top() == GAME_STATE_PAUSED_GAME)); }
+	GameState							m_gameStatePresent									= GAME_STATE_LOBBY;
+	std::stack<GameState>				m_gameStatesPrevious;
 
-	LONG					m_previousWindowPosX				= 0; 
-	LONG					m_previousWindowPosY				= 0;
-	LONG					m_previousWindowWidth				= 1600;
-	LONG					m_previousWindowHeight				= 900;
+	void								InputReset()										{ m_inputMousePositionClient = { 0,0 }; m_inputMouseClickedPositionClient = { 0, 0 }; m_inputIsClicked = false; m_inputScrollDelta = 0; }
+	POINT								m_inputMousePositionClient							= { 0, 0 };
+	POINT								m_inputMouseClickedPositionClient					= { 0, 0 };
+	bool								m_inputIsClicked									= false;
+	int									m_inputScrollDelta									= 0;
 
-	POINT					m_inputMousePositionClient			= { 0, 0 };
-	POINT					m_inputMouseClickedPositionClient	= { 0, 0 };
-	bool					m_inputIsClicked					= false;
-	int						m_inputScrollDelta					= 0;
+private:
 
-	bool					GameNeedSave()						{ return (m_presentGameState == GAME_STATE_IN_GAME) || (m_presentGameState == GAME_STATE_PAUSED_GAME) || ((m_presentGameState == GAME_STATE_OPTION) && (m_previousGameStates.top() == GAME_STATE_PAUSED_GAME)); }
-	GameState				m_presentGameState					= GAME_STATE_LOBBY;
-	std::stack<GameState>	m_previousGameStates;
+	bool								NeedResetDxgiInterface() const						{ return (m_dxgiFactory->IsCurrent() == FALSE) || m_needResetAdapterAndOutput; }
+	bool								m_needResetAdapterAndOutput							= false;
+	bool								NeedResetScreenSetting() const						{ return m_needResetScreenMode || m_needResetScreenResolution || m_needResetHDR || m_needResetGUI; }
+	bool								m_needResetScreenMode								= false;
+	bool								m_needResetScreenResolution							= false;
+	bool								m_needResetHDR										= false;
+	bool								m_needResetGUI										= false;
+
+	LONG								m_previousWindowPosX = 0;
+	LONG								m_previousWindowPosY = 0;
+	LONG								m_previousWindowWidth = 1600;
+	LONG								m_previousWindowHeight = 900;
+
+	OptionFullScreen					m_optionFullScreen;
+	OptionHDR							m_optionHDR;
+	OptionTearing						m_optionTearing;
+	OptionGUI							m_optionGUI;
+	OptionRayTracing					m_optionRayTracing;
+	OptionMeshShader					m_optionMeshShader;
+	OptionSound							m_optionSound;
 };

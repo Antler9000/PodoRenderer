@@ -38,7 +38,6 @@
     <ClInclude Include="External\imgui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Code\Source\SodoGUI.cpp" />
     <ClCompile Include="Code\Source\main.cpp" />
     <ClCompile Include="Code\Source\SodoOption.cpp" />
     <ClCompile Include="Code\Source\SodoClose.cpp" />
@@ -171,7 +170,7 @@
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
-      <AdditionalManifestFiles>$(ProjectDir)DPIAwarness.menifest %(AdditionalManifestFiles)</AdditionalManifestFiles>
+      <AdditionalManifestFiles>$(ProjectDir)DPIAwareness.menifest %(AdditionalManifestFiles)</AdditionalManifestFiles>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -194,7 +193,7 @@
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
-      <AdditionalManifestFiles>$(ProjectDir)DPIAwarness.menifest %(AdditionalManifestFiles)</AdditionalManifestFiles>
+      <AdditionalManifestFiles>$(ProjectDir)DPIAwareness.menifest %(AdditionalManifestFiles)</AdditionalManifestFiles>
     </Manifest>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

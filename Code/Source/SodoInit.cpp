@@ -623,7 +623,8 @@ void Sodo::InitImGui()
 	m_imGuiInitialized = true;
 }
 
-void Sodo::InitTimer()
+void Sodo::InitTimers()
 {
-	TimersReset();
+	WorldTimersReset();
+	WorldTimersStop();
 }

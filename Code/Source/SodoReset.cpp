@@ -69,7 +69,7 @@ void Sodo::ResetDxgiInterface()
 		InitDSV();
 		InitCBVSRVUAV();
 		InitImGui();
-		InitTimer();
+		InitTimers();
 	}
 
 	m_needResetAdapterAndOutput = false;

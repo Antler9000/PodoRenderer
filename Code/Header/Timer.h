@@ -9,6 +9,7 @@ public:
 	Timer() 
 	{
 		Reset();
+		Start();
 	}
 
 	~Timer() = default;
@@ -21,8 +22,6 @@ public:
 	
 	void Reset()
 	{
-		m_isStopped = false;
-
 		m_timePointStarted = Clock::now();
 		m_timePointStopped = m_timePointStarted;
 		m_timePointCurrent = m_timePointStarted;

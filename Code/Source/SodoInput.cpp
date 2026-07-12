@@ -146,9 +146,8 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		case WM_ENTERSIZEMOVE:
 		{
-			m_isResizing = true;
-			m_isMoving = true;
-			TimersStop();
+			m_isWindowResizing = true;
+			m_isWindowMoving = true;
 
 			return 0;
 		}
@@ -169,9 +168,8 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 				}
 			}
 
-			m_isResizing = false;
-			m_isMoving = false;
-			TimersStart();
+			m_isWindowResizing = false;
+			m_isWindowMoving = false;
 
 			return 0;
 		}
@@ -183,7 +181,7 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 				return 0;
 			}
 
-			if (m_isResizing == true)
+			if (m_isWindowResizing == true)
 			{
 				return 0;
 			}
@@ -200,7 +198,7 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 				return 0;
 			}
 
-			if (m_isMoving == true)
+			if (m_isWindowMoving == true)
 			{
 				return 0;
 			}
@@ -219,15 +217,14 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		case WM_ACTIVATE:
 		{
-			if (LOWORD(wParam) == WA_INACTIVE)
+			bool isMinimized = (HIWORD(wParam) != 0);
+			if (isMinimized == true)
 			{
-				m_isInactive = true;
-				TimersStop();
+				m_isWindowMinimized = true;
 			}
 			else
 			{
-				m_isInactive = false;
-				TimersStart();
+				m_isWindowMinimized = false;
 			}
 
 			return 0;
@@ -238,8 +235,9 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			if (GameNeedSave() == true)
 			{
-				m_previousGameStates.push(m_presentGameState);
-				m_presentGameState = GAME_STATE_CHECK_EXIT_TO_WINDOW;
+				m_gameStatesPrevious.push(m_gameStatePresent);
+				m_gameStatePresent = GAME_STATE_CHECK_EXIT_TO_WINDOW;
+				WorldTimersStop();
 			}
 			else
 			{
