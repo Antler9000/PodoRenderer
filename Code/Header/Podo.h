@@ -1,4 +1,10 @@
 ﻿#pragma once
+#include "BaseApp.h"
+#include "Engine.h"
+#include "Option.h"
+#include "Timer.h"
+#include "Alloc.h"
+#include "imgui.h"
 #include <windows.h>
 #include <d3dx12_root_signature.h>
 #include <d3d12.h>
@@ -8,26 +14,19 @@
 #include <dxgicommon.h>
 #include <dxgiformat.h>
 #include <wrl/client.h>
-#include <stack>
 #include <string>
 #include <fstream>
-#include "imgui.h"
-#include "BaseApp.h"
-#include "Game.h"
-#include "Option.h"
-#include "Timer.h"
-#include "Alloc.h"
 
-class Sodo : public BaseApp<Sodo>
+class Podo : public BaseApp<Podo>
 {
 public:
 
-	Sodo() : BaseApp(L"Sodo Sandbox")
+	Podo() : BaseApp(L"Podo Renderer")
 	{
 
 	}
 
-	~Sodo()
+	~Podo()
 	{
 		ResetQueuedCommands();
 
@@ -69,7 +68,6 @@ public:
 		m_optionRayTracing.DebugPrint();
 		m_optionMeshShader.DebugPrint();
 		m_optionGUI.DebugPrint();
-		m_optionSound.DebugPrint();
 	}
 
 	int RunMessageLoop()
@@ -149,25 +147,16 @@ private:
 	void UpdateWorld();
 	void UpdateSceneAndGUI();
 	void UpdateGUI();
-	void UpdateGUILobby(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
-	void UpdateGUILoadingToGame(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
-	void UpdateGUIInGame(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
-	void UpdateGUIPausedGame(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
-	void UpdateGUICheckExitToLobby(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
-	void UpdateGUILoadingToLobby(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
-	void UpdateGUIOption(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
-	void UpdateGUICheckExitToWindow(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void UpdateGUIEnterLoading(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void UpdateGUIInRender(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void UpdateGUIMenu(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
 	void UpdateDebugCaption();
 
 	void InputMouseMove(WPARAM wParam, LPARAM lParam);
-	void InputMouseLeftButtonDown(WPARAM wParam, LPARAM lParam);
-	void InputMouseLeftButtonUp(WPARAM wParam, LPARAM lParam);
-	void InputMouseRightButtonDown(WPARAM wParam, LPARAM lParam);
-	void InputMouseRightButtonUp(WPARAM wParam, LPARAM lParam);
-	void InputMouseMiddleButtonDown(WPARAM wParam, LPARAM lParam);
-	void InputMouseMiddleButtonUp(WPARAM wParam, LPARAM lParam);
 	void InputMouseWheelScroll(WPARAM wParam, LPARAM lParam);
 	void InputKeyboardDown(WPARAM wParam, LPARAM lParam);
+	void InputMouseLeftButtonDown(WPARAM wParam, LPARAM lParam);
+	void InputMouseLeftButtonUp(WPARAM wParam, LPARAM lParam);
 
 private:
 
@@ -250,8 +239,8 @@ private:
 	CD3DX12_CPU_DESCRIPTOR_HANDLE		m_descriptorHeapDSVCpuStartHandle;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSCpuStartHandleForImGui;
 	CD3DX12_GPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSGpuStartHandleForImGui;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSCpuStartHandleForGame;
-	CD3DX12_GPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSGpuStartHandleForGame;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSCpuStartHandleForRenderer;
+	CD3DX12_GPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSGpuStartHandleForRenderer;
 	
 	bool								m_imGuiInitialized									= false;
 	ImVec2								m_imGuiSpacingSize									= ImVec2(0.0f, 10.0f);
@@ -260,7 +249,7 @@ private:
 	ImVec2								m_imGuiLargeButtonSize								= ImVec2(360.0f, 40.0f);
 
 	bool								IsUpdateStopped() const								{ return (IsWorldStopped() && IsSceneAndGUIStopped()); }
-	bool								IsWorldStopped() const								{ return (m_gameStatePresent != GAME_STATE_IN_GAME); }
+	bool								IsWorldStopped() const								{ return (m_engineStatePresent != ENGINE_STATE_IN_RENDER); }
 	bool								IsSceneAndGUIStopped() const						{ return m_isWindowResizing || m_isWindowMoving || m_isWindowMinimized; }
 	bool								m_isWindowResizing									= false;
 	bool								m_isWindowMoving									= false;
@@ -272,9 +261,7 @@ private:
 	Timer								m_worldTimerTotal;
 	Timer								m_worldTimerFrame;
 
-	bool								GameNeedSave()										{ return (m_gameStatePresent == GAME_STATE_IN_GAME) || (m_gameStatePresent == GAME_STATE_PAUSED_GAME) || ((m_gameStatePresent == GAME_STATE_OPTION) && (m_gameStatesPrevious.top() == GAME_STATE_PAUSED_GAME)); }
-	GameState							m_gameStatePresent									= GAME_STATE_LOBBY;
-	std::stack<GameState>				m_gameStatesPrevious;
+	EngineState							m_engineStatePresent								= ENGINE_STATE_IN_RENDER;
 
 	void								InputReset()										{ m_inputMousePositionClient = { 0,0 }; m_inputMouseClickedPositionClient = { 0, 0 }; m_inputIsClicked = false; m_inputScrollDelta = 0; }
 	POINT								m_inputMousePositionClient							= { 0, 0 };
@@ -303,5 +290,4 @@ private:
 	OptionGUI							m_optionGUI;
 	OptionRayTracing					m_optionRayTracing;
 	OptionMeshShader					m_optionMeshShader;
-	OptionSound							m_optionSound;
 };

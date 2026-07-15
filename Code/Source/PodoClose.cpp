@@ -1,16 +1,16 @@
-﻿#include <windows.h>
+﻿#include "Podo.h"
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx12.h"
-#include "Sodo.h"
+#include <windows.h>
 
-void Sodo::CloseFenceEvent()
+void Podo::CloseFenceEvent()
 {
 	CloseHandle(m_fenceEvent);
 	m_fenceEvent = nullptr;
 }
 
-void Sodo::CloseImGui()
+void Podo::CloseImGui()
 {
 	if (m_imGuiInitialized == false)
 	{

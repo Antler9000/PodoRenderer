@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include <windows.h>
 #include "Debug.h"
+#include <windows.h>
 
 //NOTE : WindowProc에서 생성할 pThis 객체의 클래스가 자식 클래스일 수 있도록 템플릿 타입 매개변수를 사용함
 template <class DerievedApp>

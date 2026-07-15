@@ -1,0 +1,8 @@
+﻿#pragma once
+
+enum EngineState
+{
+	ENGINE_STATE_ENTER_LOADING,
+	ENGINE_STATE_IN_RENDER,
+	ENGINE_STATE_MENU,
+};

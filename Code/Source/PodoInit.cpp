@@ -1,4 +1,11 @@
-﻿#include <windows.h>
+﻿#include "Podo.h"
+#include "Option.h"
+#include "Alloc.h"
+#include "Debug.h"
+#include "imgui.h"
+#include "imgui_impl_win32.h"
+#include "imgui_impl_dx12.h"
+#include <windows.h>
 #include <d3d12sdklayers.h>
 #include <d3dx12_root_signature.h>
 #include <d3dx12_core.h>
@@ -14,18 +21,11 @@
 #include <wrl/client.h>
 #include <string>
 #include <stdexcept>
-#include "imgui.h"
-#include "imgui_impl_win32.h"
-#include "imgui_impl_dx12.h"
-#include "Sodo.h"
-#include "Option.h"
-#include "Alloc.h"
-#include "Debug.h"
 
 using Microsoft::WRL::ComPtr;
 using std::wstring;
 
-void Sodo::InitFactory()
+void Podo::InitFactory()
 {
 	UINT factoryFlags = 0;
 
@@ -45,7 +45,7 @@ void Sodo::InitFactory()
 	m_optionTearing.featureSupported = tearingQuery;
 }
 
-void Sodo::InitAdapterAndOutput()
+void Podo::InitAdapterAndOutput()
 {
 	m_dxgiAdapter.Reset();
 
@@ -74,7 +74,7 @@ void Sodo::InitAdapterAndOutput()
 	throw std::runtime_error("can't find pAdapter that connected with most intersecting output");
 }
 
-bool Sodo::InitOutput(IDXGIAdapter3* pAdapter)
+bool Podo::InitOutput(IDXGIAdapter3* pAdapter)
 {
 	m_dxgiOutput.Reset();
 	m_dxgiOutput6.Reset();
@@ -113,7 +113,7 @@ bool Sodo::InitOutput(IDXGIAdapter3* pAdapter)
 	return false;
 }
 
-void Sodo::InitDevice()
+void Podo::InitDevice()
 {
 	m_device5.Reset();
 	m_device2.Reset();
@@ -150,12 +150,12 @@ void Sodo::InitDevice()
 	}
 }
 
-void Sodo::InitFence()
+void Podo::InitFence()
 {
 	ThrowIfFailed(m_device->CreateFence(m_fenceCurrent, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(m_fence.ReleaseAndGetAddressOf())));
 }
 
-void Sodo::InitFenceEvent()
+void Podo::InitFenceEvent()
 {
 	CloseFenceEvent();
 
@@ -169,7 +169,7 @@ void Sodo::InitFenceEvent()
 	ThrowIfNull(m_fenceEvent);
 }
 
-void Sodo::InitCommandQueue()
+void Podo::InitCommandQueue()
 {
 	D3D12_COMMAND_QUEUE_DESC commandQueueDesc = {};
 	commandQueueDesc.Type		= D3D12_COMMAND_LIST_TYPE_DIRECT;
@@ -181,7 +181,7 @@ void Sodo::InitCommandQueue()
 	);
 }
 
-void Sodo::InitCommandAllocator()
+void Podo::InitCommandAllocator()
 {
 	ThrowIfFailed(
 		m_device->CreateCommandAllocator(
@@ -191,7 +191,7 @@ void Sodo::InitCommandAllocator()
 	);
 }
 
-void Sodo::InitCommandList()
+void Podo::InitCommandList()
 {
 	m_commandList6.Reset();
 	m_commandList4.Reset();
@@ -213,7 +213,7 @@ void Sodo::InitCommandList()
 	m_commandList->Close();
 }
 
-void Sodo::InitFormatSupport()
+void Podo::InitFormatSupport()
 {
 	D3D12_FEATURE_DATA_FORMAT_SUPPORT backBufferFormatSDRQuery = {
 		m_screenBackBufferFormatSDR,
@@ -257,7 +257,7 @@ void Sodo::InitFormatSupport()
 	ThrowIfFalse(depthStencilFormatQuery.Support1 & D3D12_FORMAT_SUPPORT1_DEPTH_STENCIL);
 }
 
-void Sodo::InitHDRSwapChainSupport()
+void Podo::InitHDRSwapChainSupport()
 {
 	m_screenSwapChain.Reset();
 
@@ -303,7 +303,7 @@ void Sodo::InitHDRSwapChainSupport()
 	}
 }
 
-void Sodo::InitSavedOptions()
+void Podo::InitSavedOptions()
 {
 	OptionRestore();
 
@@ -333,7 +333,7 @@ void Sodo::InitSavedOptions()
 	}
 }
 
-void Sodo::InitScreenMode()
+void Podo::InitScreenMode()
 {
 	HMONITOR monitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
 	MONITORINFO monitorInfo{};
@@ -360,7 +360,7 @@ void Sodo::InitScreenMode()
 	}
 }
 
-void Sodo::InitSwapChain()
+void Podo::InitSwapChain()
 {
 	m_screenSwapChain.Reset();
 
@@ -411,7 +411,7 @@ void Sodo::InitSwapChain()
 	}
 }
 
-void Sodo::InitBackBuffers()
+void Podo::InitBackBuffers()
 {
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
 
@@ -428,7 +428,7 @@ void Sodo::InitBackBuffers()
 	}
 }
 
-void Sodo::InitViewPort()
+void Podo::InitViewPort()
 {
 	m_screenViewPort.TopLeftX = 0.0f;
 	m_screenViewPort.TopLeftY = 0.0f;
@@ -438,7 +438,7 @@ void Sodo::InitViewPort()
 	m_screenViewPort.MaxDepth = 1.0f;
 }
 
-void Sodo::InitScissorRectangle()
+void Podo::InitScissorRectangle()
 {
 	m_screenScissorRectangle.left = 0;
 	m_screenScissorRectangle.top = 0;
@@ -446,7 +446,7 @@ void Sodo::InitScissorRectangle()
 	m_screenScissorRectangle.bottom = m_screenBackBufferHeight;
 }
 
-void Sodo::InitDepthStencilBuffer()
+void Podo::InitDepthStencilBuffer()
 {
 	D3D12_RESOURCE_DESC depthStencilBufferDesc = {};
 	depthStencilBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -480,7 +480,7 @@ void Sodo::InitDepthStencilBuffer()
 	);
 }
 
-void Sodo::InitDescriptorHeapRTV()
+void Podo::InitDescriptorHeapRTV()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc = {};
 	descriptorHeapDesc.NumDescriptors = m_screenBackBufferCount;
@@ -499,7 +499,7 @@ void Sodo::InitDescriptorHeapRTV()
 	m_descriptorHeapRTVCpuStartHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_descriptorHeapRTV->GetCPUDescriptorHandleForHeapStart());
 }
 
-void Sodo::InitDescriptorHeapDSV()
+void Podo::InitDescriptorHeapDSV()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc = {};
 	descriptorHeapDesc.NumDescriptors = 1;
@@ -518,7 +518,7 @@ void Sodo::InitDescriptorHeapDSV()
 	m_descriptorHeapDSVCpuStartHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_descriptorHeapDSV->GetCPUDescriptorHandleForHeapStart());
 }
 
-void Sodo::InitDescriptorHeapCBVSRVUAV()
+void Podo::InitDescriptorHeapCBVSRVUAV()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc = {};
 	UINT totalCount = m_descriptorHeapCBVCount + m_descriptorHeapSRVCount + m_descriptorHeapUAVCount;
@@ -539,14 +539,14 @@ void Sodo::InitDescriptorHeapCBVSRVUAV()
 	m_descriptorHeapCBVSRVUAVSCpuStartHandleForImGui = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_descriptorHeapCBVSRVUAV->GetCPUDescriptorHandleForHeapStart());
 	m_descriptorHeapCBVSRVUAVSGpuStartHandleForImGui = CD3DX12_GPU_DESCRIPTOR_HANDLE(m_descriptorHeapCBVSRVUAV->GetGPUDescriptorHandleForHeapStart());
 
-	m_descriptorHeapCBVSRVUAVSCpuStartHandleForGame = m_descriptorHeapCBVSRVUAVSCpuStartHandleForImGui;
-	m_descriptorHeapCBVSRVUAVSCpuStartHandleForGame.Offset(m_imGuiDescriptorHeapCapacity, m_descriptorHeapCBVSRVUAVIncrementSize);
-	m_descriptorHeapCBVSRVUAVSGpuStartHandleForGame = m_descriptorHeapCBVSRVUAVSGpuStartHandleForImGui;
-	m_descriptorHeapCBVSRVUAVSGpuStartHandleForGame.Offset(m_imGuiDescriptorHeapCapacity, m_descriptorHeapCBVSRVUAVIncrementSize);
+	m_descriptorHeapCBVSRVUAVSCpuStartHandleForRenderer = m_descriptorHeapCBVSRVUAVSCpuStartHandleForImGui;
+	m_descriptorHeapCBVSRVUAVSCpuStartHandleForRenderer.Offset(m_imGuiDescriptorHeapCapacity, m_descriptorHeapCBVSRVUAVIncrementSize);
+	m_descriptorHeapCBVSRVUAVSGpuStartHandleForRenderer = m_descriptorHeapCBVSRVUAVSGpuStartHandleForImGui;
+	m_descriptorHeapCBVSRVUAVSGpuStartHandleForRenderer.Offset(m_imGuiDescriptorHeapCapacity, m_descriptorHeapCBVSRVUAVIncrementSize);
 }
 
 
-void Sodo::InitRTV()
+void Podo::InitRTV()
 {
 	CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandleRTV = m_descriptorHeapRTVCpuStartHandle;
 	for (UINT i = 0; i < m_screenBackBufferCount; i++)
@@ -555,17 +555,17 @@ void Sodo::InitRTV()
 	}
 }
 
-void Sodo::InitDSV()
+void Podo::InitDSV()
 {
 	m_device->CreateDepthStencilView(m_screenDepthStencilBuffer.Get(), nullptr, m_descriptorHeapDSVCpuStartHandle);
 }
 
-void Sodo::InitCBVSRVUAV()
+void Podo::InitCBVSRVUAV()
 {
 
 }
 
-void Sodo::InitImGui()
+void Podo::InitImGui()
 {
 	CloseImGui();
 
@@ -623,7 +623,7 @@ void Sodo::InitImGui()
 	m_imGuiInitialized = true;
 }
 
-void Sodo::InitTimers()
+void Podo::InitTimers()
 {
 	WorldTimersReset();
 	WorldTimersStop();

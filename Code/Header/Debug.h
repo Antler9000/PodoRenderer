@@ -6,12 +6,12 @@
 #include <stdexcept>
 #include <crtdbg.h>
 
-class SodoException : public std::runtime_error
+class PodoException : public std::runtime_error
 {
 public:
 
 	template <typename ResultType>
-	SodoException(ResultType result, std::string statement, std::source_location location)
+	PodoException(ResultType result, std::string statement, std::source_location location)
 		: std::runtime_error(ErrorString(ResultString(result), statement, location))
 	{
 
@@ -56,7 +56,7 @@ private:
 	HRESULT pResult = (statement);\
 	if (FAILED(pResult) == true)\
 	{\
-		throw SodoException(pResult, #statement, std::source_location::current());\
+		throw PodoException(pResult, #statement, std::source_location::current());\
 	}\
 }
 
@@ -65,7 +65,7 @@ private:
 	bool pResult = (statement);\
 	if (pResult == false)\
 	{\
-		throw SodoException(pResult, #statement, std::source_location::current());\
+		throw PodoException(pResult, #statement, std::source_location::current());\
 	}\
 }
 
@@ -74,7 +74,7 @@ private:
 	void* pResult = (statement);\
 	if(pResult == nullptr)\
 	{\
-		throw SodoException(pResult, #statement, std::source_location::current());\
+		throw PodoException(pResult, #statement, std::source_location::current());\
 	}\
 }
 

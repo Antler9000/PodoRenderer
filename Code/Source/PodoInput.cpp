@@ -1,17 +1,13 @@
-﻿#include <windows.h>
-#include <windowsx.h>
-#include <format>
-#include <string>
-#include <cstdlib>
+﻿#include "Podo.h"
 #include "imgui.h"
-#include "Sodo.h"
-#include "Game.h"
+#include <windows.h>
+#include <windowsx.h>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 //NOTE :	WindowProc이 수행 중에는 해당 스레드의 메시지 큐에 쌓인 다른 메시지들을 처리하지 못하므로,
 //			되도록 이 안에서는 짧은 로직만 수행하도록 하고, 긴 대기가 필요한 로직은 별도 스레드로 처리하자
-LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT Podo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT imGuiHandled = ImGui_ImplWin32_WndProcHandler(m_hWnd, uMsg, wParam, lParam);
 	if (imGuiHandled)
@@ -41,7 +37,7 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 				InputMouseLeftButtonDown(wParam, lParam);
 			}
-			
+
 			return 0;
 		}
 
@@ -52,54 +48,6 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			if (io.WantCaptureMouse == false)
 			{
 				InputMouseLeftButtonUp(wParam, lParam);
-			}
-			
-			return 0;
-		}
-
-		case WM_RBUTTONDOWN:
-		{
-			ImGuiIO& io = ImGui::GetIO();
-
-			if (io.WantCaptureMouse == false)
-			{
-				InputMouseRightButtonDown(wParam, lParam);
-			}
-
-			return 0;
-		}
-
-		case WM_RBUTTONUP:
-		{
-			ImGuiIO& io = ImGui::GetIO();
-
-			if (io.WantCaptureMouse == false)
-			{
-				InputMouseRightButtonUp(wParam, lParam);
-			}
-
-			return 0;
-		}
-
-		case WM_MBUTTONDOWN:
-		{
-			ImGuiIO& io = ImGui::GetIO();
-
-			if (io.WantCaptureMouse == false)
-			{
-				InputMouseMiddleButtonDown(wParam, lParam);
-			}
-
-			return 0;
-		}
-
-		case WM_MBUTTONUP:
-		{
-			ImGuiIO& io = ImGui::GetIO();
-
-			if (io.WantCaptureMouse == false)
-			{
-				InputMouseMiddleButtonUp(wParam, lParam);
 			}
 
 			return 0;
@@ -233,16 +181,8 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		//NOTE : ALT+F4 혹은 우상단 창닫기 버튼을 이용한 종료를 처리함
 		case WM_CLOSE:
 		{
-			if (GameNeedSave() == true)
-			{
-				m_gameStatesPrevious.push(m_gameStatePresent);
-				m_gameStatePresent = GAME_STATE_CHECK_EXIT_TO_WINDOW;
-				WorldTimersStop();
-			}
-			else
-			{
-				DestroyWindow(m_hWnd);
-			}
+			OptionSave();
+			DestroyWindow(m_hWnd);
 
 			return 0;
 		}
@@ -258,13 +198,13 @@ LRESULT Sodo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(m_hWnd, uMsg, wParam, lParam);
 }
 
-void Sodo::InputMouseMove(WPARAM wParam, LPARAM lParam)
+void Podo::InputMouseMove(WPARAM wParam, LPARAM lParam)
 {
 	m_inputMousePositionClient.x = GET_X_LPARAM(lParam);
 	m_inputMousePositionClient.y = GET_Y_LPARAM(lParam);
 }
 
-void Sodo::InputMouseLeftButtonDown(WPARAM wParam, LPARAM lParam)
+void Podo::InputMouseLeftButtonDown(WPARAM wParam, LPARAM lParam)
 {
 	if (m_inputIsClicked == true)
 	{
@@ -276,7 +216,7 @@ void Sodo::InputMouseLeftButtonDown(WPARAM wParam, LPARAM lParam)
 	m_inputIsClicked = true;
 }
 
-void Sodo::InputMouseLeftButtonUp(WPARAM wParam, LPARAM lParam)
+void Podo::InputMouseLeftButtonUp(WPARAM wParam, LPARAM lParam)
 {
 	std::wstring message = std::format(
 		L"{}{} 시작 (x, y) = ({}, {}) \n 끝 (x, y) = ({}, {})",
@@ -295,74 +235,12 @@ void Sodo::InputMouseLeftButtonUp(WPARAM wParam, LPARAM lParam)
 	m_inputIsClicked = false;
 }
 
-void Sodo::InputMouseRightButtonDown(WPARAM wParam, LPARAM lParam)
-{
-	if (m_inputIsClicked == true)
-	{
-		return;
-	}
-
-	m_inputMouseClickedPositionClient.x = GET_X_LPARAM(lParam);
-	m_inputMouseClickedPositionClient.y = GET_Y_LPARAM(lParam);
-	m_inputIsClicked = true;
-}
-
-void Sodo::InputMouseRightButtonUp(WPARAM wParam, LPARAM lParam)
-{
-	std::wstring message = std::format(
-		L"{}{} 시작 (x, y) = ({}, {}) \n 끝 (x, y) = ({}, {})",
-		wParam & MK_CONTROL ? L"[CTRL]" : L"",
-		wParam & MK_SHIFT ? L"[SHIFT]" : L"",
-		m_inputMouseClickedPositionClient.x,
-		m_inputMouseClickedPositionClient.y,
-		GET_X_LPARAM(lParam),
-		GET_Y_LPARAM(lParam)
-	);
-
-	unsigned int mouseMovedManhattanDist = abs(GET_X_LPARAM(lParam) - m_inputMouseClickedPositionClient.x) + abs(GET_Y_LPARAM(lParam) - m_inputMouseClickedPositionClient.y);
-	bool isDragging = (mouseMovedManhattanDist > m_inputDragThresholdDist);
-	MessageBoxW(m_hWnd, message.c_str(), isDragging ? L"우측 마우스 드래그" : L"우측 마우스 클릭", MB_OK);
-
-	m_inputIsClicked = false;
-}
-
-void Sodo::InputMouseMiddleButtonDown(WPARAM wParam, LPARAM lParam)
-{
-	if (m_inputIsClicked == true)
-	{
-		return;
-	}
-
-	m_inputMouseClickedPositionClient.x = GET_X_LPARAM(lParam);
-	m_inputMouseClickedPositionClient.y = GET_Y_LPARAM(lParam);
-	m_inputIsClicked = true;
-}
-
-void Sodo::InputMouseMiddleButtonUp(WPARAM wParam, LPARAM lParam)
-{
-	std::wstring message = std::format(
-		L"{}{} 시작 (x, y) = ({}, {}) \n 끝 (x, y) = ({}, {})",
-		wParam & MK_CONTROL ? L"[CTRL]" : L"",
-		wParam & MK_SHIFT ? L"[SHIFT]" : L"",
-		m_inputMouseClickedPositionClient.x,
-		m_inputMouseClickedPositionClient.y,
-		GET_X_LPARAM(lParam),
-		GET_Y_LPARAM(lParam)
-	);
-
-	unsigned int mouseMovedManhattanDist = abs(GET_X_LPARAM(lParam) - m_inputMouseClickedPositionClient.x) + abs(GET_Y_LPARAM(lParam) - m_inputMouseClickedPositionClient.y);
-	bool isDrag = (mouseMovedManhattanDist > m_inputDragThresholdDist);
-	MessageBoxW(m_hWnd, message.c_str(), isDrag ? L"중간 마우스 드래그" : L"중간 마우스 클릭", MB_OK);
-
-	m_inputIsClicked = false;
-}
-
-void Sodo::InputMouseWheelScroll(WPARAM wParam, LPARAM lParam)
+void Podo::InputMouseWheelScroll(WPARAM wParam, LPARAM lParam)
 {
 	m_inputScrollDelta += GET_WHEEL_DELTA_WPARAM(wParam);
 }
 
-void Sodo::InputKeyboardDown(WPARAM wParam, LPARAM lParam)
+void Podo::InputKeyboardDown(WPARAM wParam, LPARAM lParam)
 {
 	//if (wParam == VK_ESCAPE)
 	//{

@@ -57,7 +57,7 @@
     <ClInclude Include="Code\Header\BaseApp.h">
       <Filter>Code\Header</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Header\Sodo.h">
+    <ClInclude Include="Code\Header\Podo.h">
       <Filter>Code\Header</Filter>
     </ClInclude>
     <ClInclude Include="Code\Header\Debug.h">
@@ -72,7 +72,7 @@
     <ClInclude Include="Code\Header\Alloc.h">
       <Filter>Code\Header</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Header\Game.h">
+    <ClInclude Include="Code\Header\Engine.h">
       <Filter>Code\Header</Filter>
     </ClInclude>
   </ItemGroup>
@@ -101,22 +101,22 @@
     <ClCompile Include="Code\Source\main.cpp">
       <Filter>Code\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Source\SodoInit.cpp">
+    <ClCompile Include="Code\Source\PodoInit.cpp">
       <Filter>Code\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Source\SodoInput.cpp">
+    <ClCompile Include="Code\Source\PodoInput.cpp">
       <Filter>Code\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Source\SodoUpdate.cpp">
+    <ClCompile Include="Code\Source\PodoUpdate.cpp">
       <Filter>Code\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Source\SodoReset.cpp">
+    <ClCompile Include="Code\Source\PodoReset.cpp">
       <Filter>Code\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Source\SodoClose.cpp">
+    <ClCompile Include="Code\Source\PodoClose.cpp">
       <Filter>Code\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Source\SodoOption.cpp">
+    <ClCompile Include="Code\Source\PodoOption.cpp">
       <Filter>Code\Source</Filter>
     </ClCompile>
   </ItemGroup>

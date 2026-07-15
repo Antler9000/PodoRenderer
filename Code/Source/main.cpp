@@ -1,7 +1,7 @@
-﻿#include <windows.h>
+﻿#include "Podo.h"
+#include <windows.h>
 #include <stdexcept>
 #include <crtdbg.h>
-#include "Sodo.h"
 
 //NOTE :	DXGI, D3D12, DXC 라이브러리가 링킹되도록 지시함
 //			모든 번역 단위를 통틀어서 한 번만 지시하면 되므로 이곳 main.cpp에 작성했음
@@ -26,13 +26,13 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	try
 	{
-		Sodo sodoInstance;
+		Podo podoInstance;
 
-		sodoInstance.CreateAppWindow(hInstance, nCmdShow);
+		podoInstance.CreateAppWindow(hInstance, nCmdShow);
 
-		sodoInstance.InitApp();
+		podoInstance.InitApp();
 
-		return sodoInstance.RunMessageLoop();
+		return podoInstance.RunMessageLoop();
 	}
 	catch (const std::runtime_error& exception)
 	{

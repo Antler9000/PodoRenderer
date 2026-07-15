@@ -1,10 +1,10 @@
-﻿#include <windows.h>
+﻿#include "Podo.h"
+#include "Debug.h"
+#include <windows.h>
 #include <dxgi.h>
 #include <stdexcept>
-#include "Sodo.h"
-#include "Debug.h"
 
-void Sodo::ResetQueuedCommands()
+void Podo::ResetQueuedCommands()
 {
 	if (m_fenceEvent == nullptr || m_fence == nullptr || m_commandQueue == nullptr)
 	{
@@ -24,7 +24,7 @@ void Sodo::ResetQueuedCommands()
 	}
 }
 
-void Sodo::ResetDxgiInterface()
+void Podo::ResetDxgiInterface()
 {
 	ResetQueuedCommands();
 
@@ -75,7 +75,7 @@ void Sodo::ResetDxgiInterface()
 	m_needResetAdapterAndOutput = false;
 }
 
-void Sodo::ResetScreenSetting()
+void Podo::ResetScreenSetting()
 {
 	if (m_needResetScreenMode == true)
 	{
@@ -133,7 +133,7 @@ void Sodo::ResetScreenSetting()
 	m_needResetGUI				= false;
 }
 
-void Sodo::ResetToFullScreenMode()
+void Podo::ResetToFullScreenMode()
 {
 	LONG tempPreviousWindowPosX = 0;
 	LONG tempPreviousWindowPosY = 0;
@@ -189,7 +189,7 @@ void Sodo::ResetToFullScreenMode()
 	}
 }
 
-void Sodo::ResetToWindowMode()
+void Podo::ResetToWindowMode()
 {
 	SetWindowLongPtr(m_hWnd, GWL_STYLE, WS_OVERLAPPEDWINDOW | WS_VISIBLE);
 

@@ -20,8 +20,8 @@ struct OptionFullScreen
 	void DebugPrint() const
 	{
 #ifdef _DEBUG
-		OutputDebugStringW(userEnabled ? L"[SODO DEBUG] FullScreen : 유저 활성화 On\n" : L"[SODO DEBUG] FullScreen : 유저 활성화 off\n");
-		OutputDebugStringW(IsActive() ? L"[SODO DEBUG] => FullScreen On \n" : L"[SODO DEBUG] => FullScreen Off \n");
+		OutputDebugStringW(userEnabled ? L"[PODO DEBUG] FullScreen : 유저 활성화 On\n" : L"[PODO DEBUG] FullScreen : 유저 활성화 off\n");
+		OutputDebugStringW(IsActive() ? L"[PODO DEBUG] => FullScreen On \n" : L"[PODO DEBUG] => FullScreen Off \n");
 		OutputDebugStringW(L"\n");
 #endif
 	}
@@ -47,11 +47,11 @@ struct OptionHDR
 	void DebugPrint() const
 	{
 #ifdef _DEBUG
-		OutputDebugStringW(outputSupported		? L"[SODO DEBUG] HDR : 아웃풋 지원 On\n"	: L"[SODO DEBUG] HDR : 아웃풋 지원 off\n");
-		OutputDebugStringW(formatSupported		? L"[SODO DEBUG] HDR : 포맷 지원 On\n"		: L"[SODO DEBUG] HDR : 포맷 지원 off\n");
-		OutputDebugStringW(colorSpaceSupported	? L"[SODO DEBUG] HDR : 색 공간 지원 On\n"	: L"[SODO DEBUG] HDR : 색 공간 지원 off\n");
-		OutputDebugStringW(userEnabled			? L"[SODO DEBUG] HDR : 유저 활성화 On\n"	: L"[SODO DEBUG] HDR : 유저 활성화 off\n");
-		OutputDebugStringW(IsActive()			? L"[SODO DEBUG] => HDR On \n"				: L"[SODO DEBUG] => HDR Off \n");
+		OutputDebugStringW(outputSupported		? L"[PODO DEBUG] HDR : 아웃풋 지원 On\n"	: L"[PODO DEBUG] HDR : 아웃풋 지원 off\n");
+		OutputDebugStringW(formatSupported		? L"[PODO DEBUG] HDR : 포맷 지원 On\n"		: L"[PODO DEBUG] HDR : 포맷 지원 off\n");
+		OutputDebugStringW(colorSpaceSupported	? L"[PODO DEBUG] HDR : 색 공간 지원 On\n"	: L"[PODO DEBUG] HDR : 색 공간 지원 off\n");
+		OutputDebugStringW(userEnabled			? L"[PODO DEBUG] HDR : 유저 활성화 On\n"	: L"[PODO DEBUG] HDR : 유저 활성화 off\n");
+		OutputDebugStringW(IsActive()			? L"[PODO DEBUG] => HDR On \n"				: L"[PODO DEBUG] => HDR Off \n");
 		OutputDebugStringW(L"\n");
 #endif
 	}
@@ -75,9 +75,9 @@ struct OptionTearing
 	void DebugPrint() const
 	{
 #ifdef _DEBUG
-		OutputDebugStringW(featureSupported	? L"[SODO DEBUG] Tearing : 피처 지원 On\n"		: L"[SODO DEBUG] Tearing : 피처 지원 off\n");
-		OutputDebugStringW(userEnabled		? L"[SODO DEBUG] Tearing : 유저 활성화 On\n"	: L"[SODO DEBUG] Tearing : 유저 활성화 off\n");
-		OutputDebugStringW(IsActive()		? L"[SODO DEBUG] => Tearing On \n"				: L"[SODO DEBUG] => Tearing Off \n");
+		OutputDebugStringW(featureSupported	? L"[PODO DEBUG] Tearing : 피처 지원 On\n"		: L"[PODO DEBUG] Tearing : 피처 지원 off\n");
+		OutputDebugStringW(userEnabled		? L"[PODO DEBUG] Tearing : 유저 활성화 On\n"	: L"[PODO DEBUG] Tearing : 유저 활성화 off\n");
+		OutputDebugStringW(IsActive()		? L"[PODO DEBUG] => Tearing On \n"				: L"[PODO DEBUG] => Tearing Off \n");
 		OutputDebugStringW(L"\n");
 #endif
 	}
@@ -103,11 +103,11 @@ struct OptionRayTracing
 	void DebugPrint() const
 	{
 #ifdef _DEBUG
-		OutputDebugStringW(deviceSupported		? L"[SODO DEBUG] RayTracing : 디바이스 지원 On\n"		: L"[SODO DEBUG] RayTracing : 디바이스 지원 off\n");
-		OutputDebugStringW(featureSupported		? L"[SODO DEBUG] RayTracing : 피처 지원 On\n"			: L"[SODO DEBUG] RayTracing : 피처 지원 off\n");
-		OutputDebugStringW(commandListSupported	? L"[SODO DEBUG] RayTracing : 커맨드 리스트 지원 On\n"	: L"[SODO DEBUG] RayTracing : 커맨드 리스트 지원 off\n");
-		OutputDebugStringW(userEnabled			? L"[SODO DEBUG] RayTracing : 유저 활성화 On\n"			: L"[SODO DEBUG] RayTracing : 유저 활성화 off\n");
-		OutputDebugStringW(IsActive()			? L"[SODO DEBUG] => RayTracing On \n"					: L"[SODO DEBUG] => RayTracing Off \n");
+		OutputDebugStringW(deviceSupported		? L"[PODO DEBUG] RayTracing : 디바이스 지원 On\n"		: L"[PODO DEBUG] RayTracing : 디바이스 지원 off\n");
+		OutputDebugStringW(featureSupported		? L"[PODO DEBUG] RayTracing : 피처 지원 On\n"			: L"[PODO DEBUG] RayTracing : 피처 지원 off\n");
+		OutputDebugStringW(commandListSupported	? L"[PODO DEBUG] RayTracing : 커맨드 리스트 지원 On\n"	: L"[PODO DEBUG] RayTracing : 커맨드 리스트 지원 off\n");
+		OutputDebugStringW(userEnabled			? L"[PODO DEBUG] RayTracing : 유저 활성화 On\n"			: L"[PODO DEBUG] RayTracing : 유저 활성화 off\n");
+		OutputDebugStringW(IsActive()			? L"[PODO DEBUG] => RayTracing On \n"					: L"[PODO DEBUG] => RayTracing Off \n");
 		OutputDebugStringW(L"\n");
 #endif
 	}
@@ -133,11 +133,11 @@ struct OptionMeshShader
 	void DebugPrint() const
 	{
 #ifdef _DEBUG
-		OutputDebugStringW(deviceSupported		? L"[SODO DEBUG] MeshShader : 디바이스 지원 On\n"		: L"[SODO DEBUG] MeshShader : 디바이스 지원 off\n");
-		OutputDebugStringW(featureSupported		? L"[SODO DEBUG] MeshShader : 피처 지원 On\n"			: L"[SODO DEBUG] MeshShader : 피처 지원 off\n");
-		OutputDebugStringW(commandListSupported	? L"[SODO DEBUG] MeshShader : 커맨드 리스트 지원 On\n"	: L"[SODO DEBUG] MeshShader : 커맨드 리스트 지원 off\n");
-		OutputDebugStringW(userEnabled			? L"[SODO DEBUG] MeshShader : 유저 활성화 On\n"			: L"[SODO DEBUG] MeshShader : 유저 활성화 off\n");
-		OutputDebugStringW(IsActive()			? L"[SODO DEBUG] => MeshShader On \n"					: L"[SODO DEBUG] => MeshShader Off \n");
+		OutputDebugStringW(deviceSupported		? L"[PODO DEBUG] MeshShader : 디바이스 지원 On\n"		: L"[PODO DEBUG] MeshShader : 디바이스 지원 off\n");
+		OutputDebugStringW(featureSupported		? L"[PODO DEBUG] MeshShader : 피처 지원 On\n"			: L"[PODO DEBUG] MeshShader : 피처 지원 off\n");
+		OutputDebugStringW(commandListSupported	? L"[PODO DEBUG] MeshShader : 커맨드 리스트 지원 On\n"	: L"[PODO DEBUG] MeshShader : 커맨드 리스트 지원 off\n");
+		OutputDebugStringW(userEnabled			? L"[PODO DEBUG] MeshShader : 유저 활성화 On\n"			: L"[PODO DEBUG] MeshShader : 유저 활성화 off\n");
+		OutputDebugStringW(IsActive()			? L"[PODO DEBUG] => MeshShader On \n"					: L"[PODO DEBUG] => MeshShader Off \n");
 		OutputDebugStringW(L"\n");
 #endif
 	}
@@ -165,49 +165,9 @@ struct OptionGUI
 	void DebugPrint() const
 	{
 #ifdef _DEBUG
-		std::wstring masterSizeString = std::format(L"[SODO DEBUG] GUI : 마스터 사이즈 {}%\n", masterSize);
+		std::wstring masterSizeString = std::format(L"[PODO DEBUG] GUI : 마스터 사이즈 {}%\n", masterSize);
 		OutputDebugStringW(masterSizeString.c_str());
-		OutputDebugStringW(IsActive() ? L"[SODO DEBUG] => GUI On \n" : L"[SODO DEBUG] => GUI Off \n");
-		OutputDebugStringW(L"\n");
-#endif
-	}
-};
-
-struct OptionSound
-{
-	int masterVolume	= 100;
-	int uiVolume		= 100;
-	int unitVolume		= 100;
-	int effectVolume	= 100;
-	int musicVolume		= 100;
-
-	bool IsActive() const
-	{
-		bool isMasterSoundNotZero = (0 < masterVolume);
-		bool isAtLeastOneSoundNotZero = (0 < uiVolume) || (0 < unitVolume) || (0 < effectVolume) || (0 < musicVolume);
-
-		return IsSupported() && isMasterSoundNotZero && isAtLeastOneSoundNotZero;
-	}
-
-	bool IsSupported() const
-	{
-		return true;
-	}
-
-	void DebugPrint() const
-	{
-#ifdef _DEBUG
-		std::wstring masterVolumeString = std::format(L"[SODO DEBUG] Sound : 마스터 볼륨 {}%\n", masterVolume);
-		OutputDebugStringW(masterVolumeString.c_str());
-		std::wstring uiVolumeString = std::format(L"[SODO DEBUG] Sound : UI 볼륨 {}%\n", uiVolume);
-		OutputDebugStringW(uiVolumeString.c_str());
-		std::wstring unitVolumeString = std::format(L"[SODO DEBUG] Sound : 유닛 볼륨 {}%\n", unitVolume);
-		OutputDebugStringW(unitVolumeString.c_str());
-		std::wstring effectVolumeString = std::format(L"[SODO DEBUG] Sound : 효과 볼륨 {}%\n", effectVolume);
-		OutputDebugStringW(effectVolumeString.c_str());
-		std::wstring musicVolumeString = std::format(L"[SODO DEBUG] Sound : 음악 볼륨 {}%\n", musicVolume);
-		OutputDebugStringW(musicVolumeString.c_str());
-		OutputDebugStringW(IsActive() ? L"[SODO DEBUG] => Sound On \n" : L"[SODO DEBUG] => Sound Off \n");
+		OutputDebugStringW(IsActive() ? L"[PODO DEBUG] => GUI On \n" : L"[PODO DEBUG] => GUI Off \n");
 		OutputDebugStringW(L"\n");
 #endif
 	}
