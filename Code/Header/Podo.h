@@ -261,7 +261,7 @@ private:
 	Timer								m_worldTimerTotal;
 	Timer								m_worldTimerFrame;
 
-	EngineState							m_engineStatePresent								= ENGINE_STATE_IN_RENDER;
+	EngineState							m_engineStatePresent								= ENGINE_STATE_ENTER_LOADING;
 
 	void								InputReset()										{ m_inputMousePositionClient = { 0,0 }; m_inputMouseClickedPositionClient = { 0, 0 }; m_inputIsClicked = false; m_inputScrollDelta = 0; }
 	POINT								m_inputMousePositionClient							= { 0, 0 };
