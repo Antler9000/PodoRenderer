@@ -58,7 +58,7 @@ void Podo::ResetDxgiInterface()
 		InitSavedOptions();
 		InitScreenMode();
 		InitSwapChain();
-		InitBackBuffers();
+		InitBackBufferInfo();
 		InitViewPort();
 		InitScissorRectangle();
 		InitDepthStencilBuffer();
@@ -118,7 +118,7 @@ void Podo::ResetScreenSetting()
 			m_screenSwapChain->SetColorSpace1(m_screenBackBufferColorSpaceSDR);
 		}
 
-		InitBackBuffers();
+		InitBackBufferInfo();
 		InitViewPort();
 		InitScissorRectangle();
 		InitDepthStencilBuffer();

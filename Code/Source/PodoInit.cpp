@@ -411,10 +411,9 @@ void Podo::InitSwapChain()
 	}
 }
 
-void Podo::InitBackBuffers()
+void Podo::InitBackBufferInfo()
 {
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-
 	m_screenSwapChain->GetDesc1(&swapChainDesc);
 	m_screenBackBufferWidth = swapChainDesc.Width;
 	m_screenBackBufferHeight = swapChainDesc.Height;
@@ -430,41 +429,41 @@ void Podo::InitBackBuffers()
 
 void Podo::InitViewPort()
 {
-	m_screenViewPort.TopLeftX = 0.0f;
-	m_screenViewPort.TopLeftY = 0.0f;
-	m_screenViewPort.Width = FLOAT(m_screenBackBufferWidth);
-	m_screenViewPort.Height = FLOAT(m_screenBackBufferHeight);
-	m_screenViewPort.MinDepth = 0.0f;
-	m_screenViewPort.MaxDepth = 1.0f;
+	m_screenViewPort.TopLeftX	= 0.0f;
+	m_screenViewPort.TopLeftY	= 0.0f;
+	m_screenViewPort.Width		= FLOAT(m_screenBackBufferWidth);
+	m_screenViewPort.Height		= FLOAT(m_screenBackBufferHeight);
+	m_screenViewPort.MinDepth	= 0.0f;
+	m_screenViewPort.MaxDepth	= 1.0f;
 }
 
 void Podo::InitScissorRectangle()
 {
-	m_screenScissorRectangle.left = 0;
-	m_screenScissorRectangle.top = 0;
-	m_screenScissorRectangle.right = m_screenBackBufferWidth;
-	m_screenScissorRectangle.bottom = m_screenBackBufferHeight;
+	m_screenScissorRectangle.left	= 0;
+	m_screenScissorRectangle.top	= 0;
+	m_screenScissorRectangle.right	= m_screenBackBufferWidth;
+	m_screenScissorRectangle.bottom	= m_screenBackBufferHeight;
 }
 
 void Podo::InitDepthStencilBuffer()
 {
 	D3D12_RESOURCE_DESC depthStencilBufferDesc = {};
-	depthStencilBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	depthStencilBufferDesc.Alignment = 0;
-	depthStencilBufferDesc.Width = m_screenBackBufferWidth;
-	depthStencilBufferDesc.Height = m_screenBackBufferHeight;
-	depthStencilBufferDesc.DepthOrArraySize = 1;
-	depthStencilBufferDesc.MipLevels = 1;
-	depthStencilBufferDesc.Format = m_screenDepthStencilBufferFormat;
-	depthStencilBufferDesc.SampleDesc.Count = 1;
-	depthStencilBufferDesc.SampleDesc.Quality = 0;
-	depthStencilBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-	depthStencilBufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+	depthStencilBufferDesc.Dimension			= D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	depthStencilBufferDesc.Alignment			= 0;
+	depthStencilBufferDesc.Width				= m_screenBackBufferWidth;
+	depthStencilBufferDesc.Height				= m_screenBackBufferHeight;
+	depthStencilBufferDesc.DepthOrArraySize		= 1;
+	depthStencilBufferDesc.MipLevels			= 1;
+	depthStencilBufferDesc.Format				= m_screenDepthStencilBufferFormat;
+	depthStencilBufferDesc.SampleDesc.Count		= 1;
+	depthStencilBufferDesc.SampleDesc.Quality	= 0;
+	depthStencilBufferDesc.Layout				= D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	depthStencilBufferDesc.Flags				= D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
 	D3D12_CLEAR_VALUE clearValue = {};
 	clearValue.Format = m_screenDepthStencilBufferFormat;
-	clearValue.DepthStencil.Depth = 1.0f;
-	clearValue.DepthStencil.Stencil = 0;
+	clearValue.DepthStencil.Depth	= 1.0f;
+	clearValue.DepthStencil.Stencil	= 0;
 
 	D3D12_HEAP_PROPERTIES heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
@@ -572,10 +571,10 @@ void Podo::InitImGui()
 	m_imGuiDescriptorHeapAllocator.Create(m_device.Get(), m_descriptorHeapCBVSRVUAV.Get(), m_imGuiDescriptorHeapCapacity);
 
 	ImGui_ImplDX12_InitInfo initInfo = {};
-	initInfo.Device = m_device.Get();
-	initInfo.CommandQueue = m_commandQueue.Get();
-	initInfo.NumFramesInFlight = 1;
-	initInfo.RTVFormat = m_optionHDR.IsActive() ? m_screenBackBufferFormatHDR : m_screenBackBufferFormatSDR;
+	initInfo.Device				= m_device.Get();
+	initInfo.CommandQueue		= m_commandQueue.Get();
+	initInfo.NumFramesInFlight	= 1;
+	initInfo.RTVFormat			= m_optionHDR.IsActive() ? m_screenBackBufferFormatHDR : m_screenBackBufferFormatSDR;
 
 	initInfo.SrvDescriptorHeap = m_descriptorHeapCBVSRVUAV.Get();
 	initInfo.SrvDescriptorAllocFn = [](ImGui_ImplDX12_InitInfo*, D3D12_CPU_DESCRIPTOR_HANDLE* pOutCpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE* outGpuHandle)

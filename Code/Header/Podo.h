@@ -49,7 +49,7 @@ public:
 		InitSavedOptions();
 		InitScreenMode();
 		InitSwapChain();
-		InitBackBuffers();
+		InitBackBufferInfo();
 		InitViewPort();
 		InitScissorRectangle();
 		InitDepthStencilBuffer();
@@ -130,7 +130,7 @@ private:
 	void InitSavedOptions();
 	void InitScreenMode();
 	void InitSwapChain();
-	void InitBackBuffers();
+	void InitBackBufferInfo();
 	void InitViewPort();
 	void InitScissorRectangle();
 	void InitDepthStencilBuffer();
@@ -180,9 +180,9 @@ public:
 
 	static constexpr	UINT							m_screenBackBufferCount				= 2;
 	static constexpr	DXGI_FORMAT						m_screenBackBufferFormatSDR			= DXGI_FORMAT_R8G8B8A8_UNORM;
-	static constexpr	DXGI_FORMAT						m_screenBackBufferFormatHDR			= DXGI_FORMAT_R16G16B16A16_FLOAT;
+	static constexpr	DXGI_FORMAT						m_screenBackBufferFormatHDR			= DXGI_FORMAT_R10G10B10A2_UNORM;
 	static constexpr	DXGI_COLOR_SPACE_TYPE			m_screenBackBufferColorSpaceSDR		= DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709;
-	static constexpr	DXGI_COLOR_SPACE_TYPE			m_screenBackBufferColorSpaceHDR		= DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;
+	static constexpr	DXGI_COLOR_SPACE_TYPE			m_screenBackBufferColorSpaceHDR		= DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
 	static constexpr	DXGI_FORMAT						m_screenDepthStencilBufferFormat	= DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	static constexpr	UINT							m_imGuiDescriptorHeapCapacity		= 64;
@@ -241,7 +241,7 @@ private:
 	CD3DX12_GPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSGpuStartHandleForImGui;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSCpuStartHandleForRenderer;
 	CD3DX12_GPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSGpuStartHandleForRenderer;
-	
+
 	bool								m_imGuiInitialized									= false;
 	ImVec2								m_imGuiSpacingSize									= ImVec2(0.0f, 10.0f);
 	ImVec2								m_imGuiSmallButtonSize								= ImVec2(120.0f, 40.0f);
