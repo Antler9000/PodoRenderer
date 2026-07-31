@@ -63,8 +63,9 @@ public:
 		InitTimers();
 
 		m_optionFullScreen.DebugPrint();
-		m_optionHDR.DebugPrint();
+		m_optionVSync.DebugPrint();
 		m_optionTearing.DebugPrint();
+		m_optionHDR.DebugPrint();
 		m_optionRayTracing.DebugPrint();
 		m_optionMeshShader.DebugPrint();
 		m_optionGUI.DebugPrint();
@@ -83,7 +84,7 @@ public:
 			}
 			else if (NeedResetDxgiInterface() == true)
 			{
-				ResetDxgiInterface();
+				ResetDXGIInterface();
 			}
 			else if (NeedResetScreenSetting() == true)
 			{
@@ -97,10 +98,10 @@ public:
 				}
 				else
 				{
-					UpdateWorldTimers();
+					UpdateTimers();
 					UpdateWorld();
-					UpdateSceneAndGUI();
-					UpdateDebugCaption();
+					UpdateRender();
+					UpdateCaption();
 				}
 			}
 		}
@@ -143,14 +144,14 @@ private:
 	void InitImGui();
 	void InitTimers();
 
-	void UpdateWorldTimers();
+	void UpdateTimers();
 	void UpdateWorld();
-	void UpdateSceneAndGUI();
+	void UpdateRender();
 	void UpdateGUI();
 	void UpdateGUIEnterLoading(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
 	void UpdateGUIInRender(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
 	void UpdateGUIMenu(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
-	void UpdateDebugCaption();
+	void UpdateCaption();
 
 	void InputMouseMove(WPARAM wParam, LPARAM lParam);
 	void InputMouseWheelScroll(WPARAM wParam, LPARAM lParam);
@@ -161,7 +162,7 @@ private:
 private:
 
 	void ResetQueuedCommands();
-	void ResetDxgiInterface();
+	void ResetDXGIInterface();
 	void ResetScreenSetting();
 	void ResetToFullScreenMode();
 	void ResetToWindowMode();
@@ -248,9 +249,9 @@ private:
 	ImVec2								m_imGuiMediumButtonSize								= ImVec2(240.0f, 40.0f);
 	ImVec2								m_imGuiLargeButtonSize								= ImVec2(360.0f, 40.0f);
 
-	bool								IsUpdateStopped() const								{ return (IsWorldStopped() && IsSceneAndGUIStopped()); }
+	bool								IsUpdateStopped() const								{ return (IsWorldStopped() && IsRenderStopped()); }
 	bool								IsWorldStopped() const								{ return (m_engineStatePresent != ENGINE_STATE_IN_RENDER); }
-	bool								IsSceneAndGUIStopped() const						{ return m_isWindowResizing || m_isWindowMoving || m_isWindowMinimized; }
+	bool								IsRenderStopped() const								{ return m_isWindowResizing || m_isWindowMoving || m_isWindowMinimized; }
 	bool								m_isWindowResizing									= false;
 	bool								m_isWindowMoving									= false;
 	bool								m_isWindowMinimized									= false;
@@ -285,8 +286,9 @@ private:
 	LONG								m_previousWindowHeight = 900;
 
 	OptionFullScreen					m_optionFullScreen;
-	OptionHDR							m_optionHDR;
+	OptionVSync							m_optionVSync;
 	OptionTearing						m_optionTearing;
+	OptionHDR							m_optionHDR;
 	OptionGUI							m_optionGUI;
 	OptionRayTracing					m_optionRayTracing;
 	OptionMeshShader					m_optionMeshShader;

@@ -27,11 +27,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	try
 	{
 		Podo podoInstance;
-
 		podoInstance.CreateAppWindow(hInstance, nCmdShow);
-
 		podoInstance.InitApp();
-
 		return podoInstance.RunMessageLoop();
 	}
 	catch (const std::runtime_error& exception)

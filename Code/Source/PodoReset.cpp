@@ -24,7 +24,7 @@ void Podo::ResetQueuedCommands()
 	}
 }
 
-void Podo::ResetDxgiInterface()
+void Podo::ResetDXGIInterface()
 {
 	ResetQueuedCommands();
 

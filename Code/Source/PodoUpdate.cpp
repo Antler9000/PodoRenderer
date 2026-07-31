@@ -1,4 +1,6 @@
-﻿#define IMGUI_DEFINE_MATH_OPERATORS
+﻿//NOTE : PIX 프로파일링을 끄고 싶을 시 아래 구문을 주석 처리 할 것
+#define USE_PIX
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "Podo.h"
 #include "Engine.h"
 #include "Timer.h"
@@ -12,6 +14,7 @@
 #include <d3d12.h>
 #include <DirectXMath.h>
 #include <dxgi.h>
+#include <pix3.h>
 #include <format>
 #include <string>
 #include <cstdlib>
@@ -19,7 +22,7 @@
 using namespace DirectX;
 using std::wstring;
 
-void Podo::UpdateWorldTimers()
+void Podo::UpdateTimers()
 {
 	m_worldTimerTotal.Update();
 	m_worldTimerFrame.Update();
@@ -35,14 +38,16 @@ void Podo::UpdateWorld()
 	}
 }
 
-void Podo::UpdateSceneAndGUI()
+void Podo::UpdateRender()
 {
-	if (IsSceneAndGUIStopped() == true)
+	if (IsRenderStopped() == true)
 	{
 		return;
 	}
 
+	PIXBeginEvent(PIX_COLOR_INDEX(0), L"CPU Render Start");
 	ResetQueuedCommands();
+	PIXEndEvent();
 
 	ThrowIfFailed(m_commandAllocator->Reset());
 	ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
@@ -90,13 +95,13 @@ void Podo::UpdateSceneAndGUI()
 	ID3D12CommandList* commandLists[] = { m_commandList.Get() };
 	m_commandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
 
-	if (m_optionTearing.IsActive() == true)
+	if (m_optionVSync.IsActive() == true)
 	{
-		ThrowIfFailed(m_screenSwapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING));
+		ThrowIfFailed(m_screenSwapChain->Present(1, 0));
 	}
 	else
 	{
-		ThrowIfFailed(m_screenSwapChain->Present(1, 0));
+		ThrowIfFailed(m_screenSwapChain->Present(0, m_optionTearing.IsActive() ? DXGI_PRESENT_ALLOW_TEARING : 0));
 	}
 
 	m_screenBackBufferIndex = m_screenSwapChain->GetCurrentBackBufferIndex();
@@ -158,8 +163,6 @@ void Podo::UpdateGUIEnterLoading(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCent
 
 	ImGui::Begin("Loading", nullptr, loadingGuiFlag);
 
-	ImGui::Dummy(m_imGuiSpacingSize);
-
 	bool startButtonClicked = ImGui::Button("Click here to start", m_imGuiLargeButtonSize);
 	if (startButtonClicked == true)
 	{
@@ -174,22 +177,12 @@ void Podo::UpdateGUIEnterLoading(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCent
 
 void Podo::UpdateGUIInRender(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos)
 {
-	ImVec2 pos = ImVec2(
-		pImGuiViewPort->Pos.x,
-		pImGuiViewPort->Pos.y + pImGuiViewPort->Size.y * 0.75f
-	);
+	ImGuiWindowFlags loadingGuiFlag = m_imGuiBasicFlag | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground;
 
-	ImVec2 size = ImVec2(
-		pImGuiViewPort->Size.x,
-		pImGuiViewPort->Size.y * 0.25f
-	);
+	ImGui::SetNextWindowPos(ImVec2(0.0f,0.0f), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(400.0f, 200.0f) * m_optionGUI.GetMasterScale(), ImGuiCond_Always);
 
-	ImGui::SetNextWindowPos(pos, ImGuiCond_Always);
-	ImGui::SetNextWindowSize(size, ImGuiCond_Always);
-
-	ImGui::Begin("In Engine", nullptr, m_imGuiBasicFlag);
-
-	ImGui::Dummy(m_imGuiSpacingSize);
+	ImGui::Begin("Loading", nullptr, loadingGuiFlag);
 
 	bool menuButtonClicked = ImGui::Button("Menu", m_imGuiSmallButtonSize);
 	bool escKeyPressed = ImGui::IsKeyPressed(ImGuiKey_Escape, false);
@@ -209,9 +202,9 @@ void Podo::UpdateGUIMenu(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos)
 
 	ImGui::Begin("Menu", nullptr, m_imGuiBasicFlag);
 
-	bool resumeButtonClicked = ImGui::Button("Resume", m_imGuiSmallButtonSize);
+	bool backButtonClicked = ImGui::Button("Back", m_imGuiSmallButtonSize);
 	bool escKeyPressed = ImGui::IsKeyPressed(ImGuiKey_Escape, false);
-	if (resumeButtonClicked == true || escKeyPressed == true)
+	if (backButtonClicked == true || escKeyPressed == true)
 	{
 		OptionSave();
 		m_engineStatePresent = ENGINE_STATE_IN_RENDER;
@@ -234,13 +227,15 @@ void Podo::UpdateGUIMenu(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos)
 	ImGui::Dummy(m_imGuiSpacingSize);
 
 	ImGui::Text("Display");
+	ImGui::BeginDisabled(m_optionFullScreen.IsSupported() == false);
 	ImGui::Checkbox("Full Screen", &m_optionFullScreen.userEnabled);
-	ImGui::BeginDisabled(m_optionHDR.IsSupported() == false);
-	ImGui::Checkbox("HDR", &m_optionHDR.userEnabled);
+	ImGui::EndDisabled();
+	ImGui::BeginDisabled(m_optionVSync.IsSupported() == false);
+	ImGui::Checkbox("VSync", &m_optionVSync.userEnabled);
 	ImGui::EndDisabled();
 	ImGui::SameLine();
-	ImGui::BeginDisabled(m_optionTearing.IsSupported() == false);
-	ImGui::Checkbox("VRR", &m_optionTearing.userEnabled);
+	ImGui::BeginDisabled(m_optionHDR.IsSupported() == false);
+	ImGui::Checkbox("HDR", &m_optionHDR.userEnabled);
 	ImGui::EndDisabled();
 
 	ImGui::Dummy(m_imGuiSpacingSize);
@@ -285,7 +280,7 @@ void Podo::UpdateGUIMenu(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos)
 	ImGui::End();
 }
 
-void Podo::UpdateDebugCaption()
+void Podo::UpdateCaption()
 {
 #ifdef _DEBUG
 	static Timer worldTimerCaption;

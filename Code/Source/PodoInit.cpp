@@ -35,7 +35,7 @@ void Podo::InitFactory()
 
 	ThrowIfFailed(CreateDXGIFactory2(factoryFlags, IID_PPV_ARGS(m_dxgiFactory.ReleaseAndGetAddressOf())));
 
-	//NOTE : 쿼리 출력 매개변수는 BOOL 타입이므로, bool 타입인 m_optionTearing.featureSupported를 매개변수로 사용하면 안 됨
+	//NOTE : 쿼리 출력 매개변수는 BOOL 타입이므로, bool 타입인 m_optionTearing.featureSupported를 인자로 사용하면 안 됨
 	BOOL tearingQuery = FALSE;
 	m_dxgiFactory->CheckFeatureSupport(
 		DXGI_FEATURE_PRESENT_ALLOW_TEARING, 
@@ -233,18 +233,19 @@ void Podo::InitFormatSupport()
 
 	ThrowIfFailed(
 		m_device->CheckFeatureSupport(
+			D3D12_FEATURE_FORMAT_SUPPORT, &depthStencilFormatQuery, sizeof(depthStencilFormatQuery)
+		)
+	);
+	ThrowIfFailed(
+		m_device->CheckFeatureSupport(
 			D3D12_FEATURE_FORMAT_SUPPORT, &backBufferFormatSDRQuery, sizeof(backBufferFormatSDRQuery)
 		)
 	);
 	HRESULT hdrQueryResult = m_device->CheckFeatureSupport(
 		D3D12_FEATURE_FORMAT_SUPPORT, &backBufferFormatHDRQuery, sizeof(backBufferFormatHDRQuery)
 	);
-	ThrowIfFailed(
-		m_device->CheckFeatureSupport(
-			D3D12_FEATURE_FORMAT_SUPPORT, &depthStencilFormatQuery, sizeof(depthStencilFormatQuery)
-		)
-	);
 
+	ThrowIfFalse(depthStencilFormatQuery.Support1 & D3D12_FORMAT_SUPPORT1_DEPTH_STENCIL);
 	ThrowIfFalse(backBufferFormatSDRQuery.Support1 & D3D12_FORMAT_SUPPORT1_RENDER_TARGET);
 	if (SUCCEEDED(hdrQueryResult) == true)
 	{
@@ -254,7 +255,6 @@ void Podo::InitFormatSupport()
 	{
 		m_optionHDR.formatSupported = false;
 	}
-	ThrowIfFalse(depthStencilFormatQuery.Support1 & D3D12_FORMAT_SUPPORT1_DEPTH_STENCIL);
 }
 
 void Podo::InitHDRSwapChainSupport()
@@ -274,7 +274,7 @@ void Podo::InitHDRSwapChainSupport()
 	swapChainDesc.SwapEffect			= DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	swapChainDesc.AlphaMode				= DXGI_ALPHA_MODE_UNSPECIFIED;
 	swapChainDesc.Flags					= DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT
-										| (m_optionTearing.featureSupported ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0);
+										| (m_optionTearing.IsActive() ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0);
 
 	ComPtr<IDXGISwapChain1> tempSwapChain = nullptr;
 
@@ -315,11 +315,6 @@ void Podo::InitSavedOptions()
 	if (m_optionHDR.IsSupported() == false)
 	{
 		m_optionHDR.userEnabled = false;
-	}
-
-	if (m_optionTearing.IsSupported() == false)
-	{
-		m_optionTearing.userEnabled = false;
 	}
 
 	if (m_optionRayTracing.IsSupported() == false)
@@ -377,7 +372,7 @@ void Podo::InitSwapChain()
 	swapChainDesc.SwapEffect			= DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	swapChainDesc.AlphaMode				= DXGI_ALPHA_MODE_UNSPECIFIED;
 	swapChainDesc.Flags					= DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT
-										| (m_optionTearing.featureSupported ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0);
+										| (m_optionTearing.IsActive() ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0);
 
 	ComPtr<IDXGISwapChain1> tempSwapChain = nullptr;
 
