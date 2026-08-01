@@ -1,7 +1,4 @@
 ﻿#pragma once
-#include <windows.h>
-#include <format>
-#include <string>
 
 struct OptionFullScreen
 {

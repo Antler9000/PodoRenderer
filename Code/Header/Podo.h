@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "BaseApp.h"
-#include "Engine.h"
+#include "EngineState.h"
 #include "Option.h"
 #include "Timer.h"
 #include "Alloc.h"
@@ -13,6 +13,7 @@
 #include <dxgi.h>
 #include <dxgicommon.h>
 #include <dxgiformat.h>
+#include <pix3.h>
 #include <wrl/client.h>
 #include <string>
 #include <fstream>
@@ -28,7 +29,7 @@ public:
 
 	~Podo()
 	{
-		ResetQueuedCommands();
+		FlushCommandQueue();
 
 		CloseFenceEvent();
 		CloseImGui();
@@ -98,6 +99,8 @@ public:
 				}
 				else
 				{
+					PIXScopedEvent(PIX_COLOR_INDEX(0), L"CPU : Frame Time");
+
 					UpdateTimers();
 					UpdateWorld();
 					UpdateRender();
@@ -161,7 +164,7 @@ private:
 
 private:
 
-	void ResetQueuedCommands();
+	void FlushCommandQueue();
 	void ResetDXGIInterface();
 	void ResetScreenSetting();
 	void ResetToFullScreenMode();

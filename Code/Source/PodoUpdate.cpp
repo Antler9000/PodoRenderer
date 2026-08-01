@@ -1,8 +1,6 @@
-﻿//NOTE : PIX 프로파일링을 끄고 싶을 시 아래 구문을 주석 처리 할 것
-#define USE_PIX
-#define IMGUI_DEFINE_MATH_OPERATORS
+﻿#define IMGUI_DEFINE_MATH_OPERATORS
 #include "Podo.h"
-#include "Engine.h"
+#include "EngineState.h"
 #include "Timer.h"
 #include "Debug.h"
 #include "imgui.h"
@@ -15,7 +13,6 @@
 #include <DirectXMath.h>
 #include <dxgi.h>
 #include <pix3.h>
-#include <format>
 #include <string>
 #include <cstdlib>
 
@@ -45,70 +42,83 @@ void Podo::UpdateRender()
 		return;
 	}
 
-	PIXBeginEvent(PIX_COLOR_INDEX(0), L"CPU Render Start");
-	ResetQueuedCommands();
-	PIXEndEvent();
-
-	ThrowIfFailed(m_commandAllocator->Reset());
-	ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
-
-	ID3D12DescriptorHeap* descriptorHeaps[] = { m_descriptorHeapCBVSRVUAV.Get() };
-	m_commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-
-	CD3DX12_RESOURCE_BARRIER barrierPresentToRenderTarget = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_screenBackBuffers[m_screenBackBufferIndex].Get(),
-		D3D12_RESOURCE_STATE_PRESENT,
-		D3D12_RESOURCE_STATE_RENDER_TARGET
-	);
-	m_commandList->ResourceBarrier(1, &barrierPresentToRenderTarget);
-
-	CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandleRTV = m_descriptorHeapRTVCpuStartHandle;
-	cpuHandleRTV.Offset(m_screenBackBufferIndex, m_descriptorHeapRTVIncrementSize);
-
-	m_commandList->OMSetRenderTargets(1, &cpuHandleRTV, true, &m_descriptorHeapDSVCpuStartHandle);
-	m_commandList->RSSetViewports(1, &m_screenViewPort);
-	m_commandList->RSSetScissorRects(1, &m_screenScissorRectangle);
-		
-
-	FLOAT sinZeroToOne = (XMScalarSin(static_cast<float>(m_worldTimerTotal.GetTimeMilli()) / 1000) + 1) / 2;
-	FLOAT pTestColor[4] = { sinZeroToOne, sinZeroToOne, sinZeroToOne, 1.0f };
-	m_commandList->ClearRenderTargetView(cpuHandleRTV, pTestColor, 0, nullptr);
-	m_commandList->ClearDepthStencilView(
-		m_descriptorHeapDSVCpuStartHandle,
-		D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,
-		1.0f,
-		0,
-		0,
-		nullptr
-	);
-
-	UpdateGUI();
-
-	CD3DX12_RESOURCE_BARRIER barrierRenderTargetToPresent = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_screenBackBuffers[m_screenBackBufferIndex].Get(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_PRESENT
-	);
-	m_commandList->ResourceBarrier(1, &barrierRenderTargetToPresent);
-
-	ThrowIfFailed(m_commandList->Close());
-	ID3D12CommandList* commandLists[] = { m_commandList.Get() };
-	m_commandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
-
-	if (m_optionVSync.IsActive() == true)
 	{
-		ThrowIfFailed(m_screenSwapChain->Present(1, 0));
-	}
-	else
-	{
-		ThrowIfFailed(m_screenSwapChain->Present(0, m_optionTearing.IsActive() ? DXGI_PRESENT_ALLOW_TEARING : 0));
+		PIXScopedEvent(PIX_COLOR_INDEX(1), L"CPU : Wait Queue Empty");
+
+		FlushCommandQueue();
 	}
 
-	m_screenBackBufferIndex = m_screenSwapChain->GetCurrentBackBufferIndex();
+	{
+		PIXScopedEvent(PIX_COLOR_INDEX(2), L"CPU : Render Scene And GUI");
+
+		ThrowIfFailed(m_commandAllocator->Reset());
+		ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
+
+		{
+			PIXScopedEvent(m_commandList.Get(), PIX_COLOR_INDEX(3), L"GPU : Render Scene And GUI");
+
+			ID3D12DescriptorHeap* descriptorHeaps[] = { m_descriptorHeapCBVSRVUAV.Get() };
+			m_commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+
+			CD3DX12_RESOURCE_BARRIER barrierPresentToRenderTarget = CD3DX12_RESOURCE_BARRIER::Transition(
+				m_screenBackBuffers[m_screenBackBufferIndex].Get(),
+				D3D12_RESOURCE_STATE_PRESENT,
+				D3D12_RESOURCE_STATE_RENDER_TARGET
+			);
+			m_commandList->ResourceBarrier(1, &barrierPresentToRenderTarget);
+
+			CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandleRTV = m_descriptorHeapRTVCpuStartHandle;
+			cpuHandleRTV.Offset(m_screenBackBufferIndex, m_descriptorHeapRTVIncrementSize);
+
+			m_commandList->OMSetRenderTargets(1, &cpuHandleRTV, true, &m_descriptorHeapDSVCpuStartHandle);
+			m_commandList->RSSetViewports(1, &m_screenViewPort);
+			m_commandList->RSSetScissorRects(1, &m_screenScissorRectangle);
+
+
+			FLOAT sinZeroToOne = (XMScalarSin(static_cast<float>(m_worldTimerTotal.GetTimeMilli()) / 1000) + 1) / 2;
+			FLOAT pTestColor[4] = { sinZeroToOne, sinZeroToOne, sinZeroToOne, 1.0f };
+			m_commandList->ClearRenderTargetView(cpuHandleRTV, pTestColor, 0, nullptr);
+			m_commandList->ClearDepthStencilView(
+				m_descriptorHeapDSVCpuStartHandle,
+				D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,
+				1.0f,
+				0,
+				0,
+				nullptr
+			);
+
+			UpdateGUI();
+
+			CD3DX12_RESOURCE_BARRIER barrierRenderTargetToPresent = CD3DX12_RESOURCE_BARRIER::Transition(
+				m_screenBackBuffers[m_screenBackBufferIndex].Get(),
+				D3D12_RESOURCE_STATE_RENDER_TARGET,
+				D3D12_RESOURCE_STATE_PRESENT
+			);
+			m_commandList->ResourceBarrier(1, &barrierRenderTargetToPresent);
+		}
+
+		ThrowIfFailed(m_commandList->Close());
+		ID3D12CommandList* commandLists[] = { m_commandList.Get() };
+		m_commandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
+
+		if (m_optionVSync.IsActive() == true)
+		{
+			ThrowIfFailed(m_screenSwapChain->Present(1, 0));
+		}
+		else
+		{
+			ThrowIfFailed(m_screenSwapChain->Present(0, m_optionTearing.IsActive() ? DXGI_PRESENT_ALLOW_TEARING : 0));
+		}
+
+		m_screenBackBufferIndex = m_screenSwapChain->GetCurrentBackBufferIndex();
+	}
 }
 
 void Podo::UpdateGUI()
 {
+	PIXScopedEvent(PIX_COLOR_INDEX(4), L"CPU : Render GUI");
+	PIXScopedEvent(m_commandList.Get(), PIX_COLOR_INDEX(5), L"GPU : Render GUI");
+
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();

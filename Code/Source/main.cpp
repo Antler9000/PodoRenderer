@@ -1,7 +1,6 @@
 ﻿#include "Podo.h"
 #include <windows.h>
 #include <stdexcept>
-#include <crtdbg.h>
 
 //NOTE :	DXGI, D3D12, DXC 라이브러리가 링킹되도록 지시함
 //			모든 번역 단위를 통틀어서 한 번만 지시하면 되므로 이곳 main.cpp에 작성했음

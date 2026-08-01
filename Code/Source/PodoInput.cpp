@@ -2,6 +2,9 @@
 #include "imgui.h"
 #include <windows.h>
 #include <windowsx.h>
+#include <format>
+#include <string>
+#include <cstdlib>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

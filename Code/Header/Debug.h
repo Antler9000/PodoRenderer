@@ -4,7 +4,6 @@
 #include <string>
 #include <source_location>
 #include <stdexcept>
-#include <crtdbg.h>
 
 class PodoException : public std::runtime_error
 {

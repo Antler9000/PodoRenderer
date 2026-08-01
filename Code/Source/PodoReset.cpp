@@ -2,31 +2,10 @@
 #include "Debug.h"
 #include <windows.h>
 #include <dxgi.h>
-#include <stdexcept>
-
-void Podo::ResetQueuedCommands()
-{
-	if (m_fenceEvent == nullptr || m_fence == nullptr || m_commandQueue == nullptr)
-	{
-		return;
-	}
-	
-	m_fenceCurrent++;
-
-	ThrowIfFailed(m_commandQueue->Signal(m_fence.Get(), m_fenceCurrent));
-
-	ThrowIfFailed(m_fence->SetEventOnCompletion(m_fenceCurrent, m_fenceEvent));
-	auto waitResult = WaitForSingleObject(m_fenceEvent, INFINITE);
-
-	if (waitResult != WAIT_OBJECT_0)
-	{
-		throw std::runtime_error("wait fence failed");
-	}
-}
 
 void Podo::ResetDXGIInterface()
 {
-	ResetQueuedCommands();
+	FlushCommandQueue();
 
 	if (m_dxgiFactory->IsCurrent() == FALSE)
 	{
@@ -91,7 +70,7 @@ void Podo::ResetScreenSetting()
 
 	if (m_screenSwapChain != nullptr)
 	{
-		ResetQueuedCommands();
+		FlushCommandQueue();
 
 		for (UINT i = 0; i < m_screenBackBufferCount; i++)
 		{
