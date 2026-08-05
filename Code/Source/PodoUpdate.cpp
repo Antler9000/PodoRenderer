@@ -1,16 +1,16 @@
 ﻿#define IMGUI_DEFINE_MATH_OPERATORS
 #include "Podo.h"
-#include "EngineState.h"
+#include "State.h"
 #include "Timer.h"
 #include "Debug.h"
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx12.h"
-#include <windows.h>
 #include <d3dx12_root_signature.h>
 #include <d3dx12_barriers.h>
 #include <d3d12.h>
 #include <DirectXMath.h>
+#include <windows.h>
 #include <dxgi.h>
 #include <pix3.h>
 #include <string>
@@ -43,19 +43,19 @@ void Podo::UpdateRender()
 	}
 
 	{
-		PIXScopedEvent(PIX_COLOR_INDEX(1), L"CPU : Wait Queue Empty");
+		PIXScopedEvent(PIX_COLOR_INDEX(4), L"CPU : 4. Reset Command List");
 
 		FlushCommandQueue();
+		ThrowIfFailed(m_commandAllocator->Reset());
+		ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
 	}
 
 	{
-		PIXScopedEvent(PIX_COLOR_INDEX(2), L"CPU : Render Scene And GUI");
-
-		ThrowIfFailed(m_commandAllocator->Reset());
-		ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
+		PIXScopedEvent(m_commandList.Get(), PIX_COLOR_INDEX(11), L"GPU : 1. Frame Time");
 
 		{
-			PIXScopedEvent(m_commandList.Get(), PIX_COLOR_INDEX(3), L"GPU : Render Scene And GUI");
+			PIXScopedEvent(PIX_COLOR_INDEX(5), L"CPU : 5. Bind Resources");
+			PIXScopedEvent(m_commandList.Get(), PIX_COLOR_INDEX(12), L"GPU : 2. Bind Resources");
 
 			ID3D12DescriptorHeap* descriptorHeaps[] = { m_descriptorHeapCBVSRVUAV.Get() };
 			m_commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
@@ -74,7 +74,6 @@ void Podo::UpdateRender()
 			m_commandList->RSSetViewports(1, &m_screenViewPort);
 			m_commandList->RSSetScissorRects(1, &m_screenScissorRectangle);
 
-
 			FLOAT sinZeroToOne = (XMScalarSin(static_cast<float>(m_worldTimerTotal.GetTimeMilli()) / 1000) + 1) / 2;
 			FLOAT pTestColor[4] = { sinZeroToOne, sinZeroToOne, sinZeroToOne, 1.0f };
 			m_commandList->ClearRenderTargetView(cpuHandleRTV, pTestColor, 0, nullptr);
@@ -86,8 +85,23 @@ void Podo::UpdateRender()
 				0,
 				nullptr
 			);
+		}
+
+		{
+			PIXScopedEvent(PIX_COLOR_INDEX(6), L"CPU : 6. Draw Scene");
+			PIXScopedEvent(m_commandList.Get(), PIX_COLOR_INDEX(13), L"GPU : 3. Draw Scene");
+		}
+
+		{
+			PIXScopedEvent(PIX_COLOR_INDEX(7), L"CPU : 7. Draw GUI");
+			PIXScopedEvent(m_commandList.Get(), PIX_COLOR_INDEX(14), L"GPU : 4. Draw GUI");
 
 			UpdateGUI();
+		}
+
+		{
+			PIXScopedEvent(PIX_COLOR_INDEX(8), L"CPU : 8. Unbind Resources");
+			PIXScopedEvent(m_commandList.Get(), PIX_COLOR_INDEX(15), L"GPU : 5. Unbind Resources");
 
 			CD3DX12_RESOURCE_BARRIER barrierRenderTargetToPresent = CD3DX12_RESOURCE_BARRIER::Transition(
 				m_screenBackBuffers[m_screenBackBufferIndex].Get(),
@@ -96,10 +110,18 @@ void Podo::UpdateRender()
 			);
 			m_commandList->ResourceBarrier(1, &barrierRenderTargetToPresent);
 		}
+	}
+
+	{
+		PIXScopedEvent(PIX_COLOR_INDEX(9), L"CPU : 9. Submit Command List");
 
 		ThrowIfFailed(m_commandList->Close());
 		ID3D12CommandList* commandLists[] = { m_commandList.Get() };
 		m_commandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
+	}
+
+	{
+		PIXScopedEvent(PIX_COLOR_INDEX(10), L"CPU : 10. Present");
 
 		if (m_optionVSync.IsActive() == true)
 		{
@@ -116,9 +138,6 @@ void Podo::UpdateRender()
 
 void Podo::UpdateGUI()
 {
-	PIXScopedEvent(PIX_COLOR_INDEX(4), L"CPU : Render GUI");
-	PIXScopedEvent(m_commandList.Get(), PIX_COLOR_INDEX(5), L"GPU : Render GUI");
-
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
@@ -133,16 +152,16 @@ void Podo::UpdateGUI()
 
 	switch (m_engineStatePresent)
 	{
-		case ENGINE_STATE_ENTER_LOADING:
+		case ENGINE_STATE_LOADING:
 		{
-			UpdateGUIEnterLoading(pImGuiViewPort, imGuiCenterPos);
+			UpdateGUILoading(pImGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
 
-		case ENGINE_STATE_IN_RENDER:
+		case ENGINE_STATE_RUNTIME:
 		{
-			UpdateGUIInRender(pImGuiViewPort, imGuiCenterPos);
+			UpdateGUIRuntime(pImGuiViewPort, imGuiCenterPos);
 
 			break;
 		}
@@ -159,7 +178,7 @@ void Podo::UpdateGUI()
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), m_commandList.Get());
 }
 
-void Podo::UpdateGUIEnterLoading(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos)
+void Podo::UpdateGUILoading(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGuiWindowFlags loadingGuiFlag = m_imGuiBasicFlag | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground;
 
@@ -176,7 +195,7 @@ void Podo::UpdateGUIEnterLoading(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCent
 	bool startButtonClicked = ImGui::Button("Click here to start", m_imGuiLargeButtonSize);
 	if (startButtonClicked == true)
 	{
-		m_engineStatePresent = ENGINE_STATE_IN_RENDER;
+		m_engineStatePresent = ENGINE_STATE_RUNTIME;
 		InputReset();
 		WorldTimersReset();
 		WorldTimersStart();
@@ -185,7 +204,7 @@ void Podo::UpdateGUIEnterLoading(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCent
 	ImGui::End();
 }
 
-void Podo::UpdateGUIInRender(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos)
+void Podo::UpdateGUIRuntime(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos)
 {
 	ImGuiWindowFlags loadingGuiFlag = m_imGuiBasicFlag | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground;
 
@@ -217,7 +236,7 @@ void Podo::UpdateGUIMenu(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos)
 	if (backButtonClicked == true || escKeyPressed == true)
 	{
 		OptionSave();
-		m_engineStatePresent = ENGINE_STATE_IN_RENDER;
+		m_engineStatePresent = ENGINE_STATE_RUNTIME;
 		WorldTimersStart();
 	}
 

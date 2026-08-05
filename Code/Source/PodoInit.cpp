@@ -5,7 +5,6 @@
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx12.h"
-#include <windows.h>
 #include <d3d12sdklayers.h>
 #include <d3dx12_root_signature.h>
 #include <d3dx12_core.h>
@@ -19,6 +18,7 @@
 #include <dxgi.h>
 #include <dxgicommon.h>
 #include <wrl/client.h>
+#include <windows.h>
 #include <string>
 #include <stdexcept>
 
@@ -533,10 +533,10 @@ void Podo::InitDescriptorHeapCBVSRVUAV()
 	m_descriptorHeapCBVSRVUAVSCpuStartHandleForImGui = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_descriptorHeapCBVSRVUAV->GetCPUDescriptorHandleForHeapStart());
 	m_descriptorHeapCBVSRVUAVSGpuStartHandleForImGui = CD3DX12_GPU_DESCRIPTOR_HANDLE(m_descriptorHeapCBVSRVUAV->GetGPUDescriptorHandleForHeapStart());
 
-	m_descriptorHeapCBVSRVUAVSCpuStartHandleForRenderer = m_descriptorHeapCBVSRVUAVSCpuStartHandleForImGui;
-	m_descriptorHeapCBVSRVUAVSCpuStartHandleForRenderer.Offset(m_imGuiDescriptorHeapCapacity, m_descriptorHeapCBVSRVUAVIncrementSize);
-	m_descriptorHeapCBVSRVUAVSGpuStartHandleForRenderer = m_descriptorHeapCBVSRVUAVSGpuStartHandleForImGui;
-	m_descriptorHeapCBVSRVUAVSGpuStartHandleForRenderer.Offset(m_imGuiDescriptorHeapCapacity, m_descriptorHeapCBVSRVUAVIncrementSize);
+	m_descriptorHeapCBVSRVUAVSCpuStartHandleForRender = m_descriptorHeapCBVSRVUAVSCpuStartHandleForImGui;
+	m_descriptorHeapCBVSRVUAVSCpuStartHandleForRender.Offset(m_imGuiDescriptorHeapCapacity, m_descriptorHeapCBVSRVUAVIncrementSize);
+	m_descriptorHeapCBVSRVUAVSGpuStartHandleForRender = m_descriptorHeapCBVSRVUAVSGpuStartHandleForImGui;
+	m_descriptorHeapCBVSRVUAVSGpuStartHandleForRender.Offset(m_imGuiDescriptorHeapCapacity, m_descriptorHeapCBVSRVUAVIncrementSize);
 }
 
 

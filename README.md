@@ -1,9 +1,9 @@
-# PodoRenderer
-D3D12, Win32, C++을 이용하여 구현 중인 렌더링 엔진입니다.
+# PodoNatureEngine
+HLSL, D3D12, Win32, C++을 이용하여 구현 중인 실시간 3D 엔진입니다.
 
-대규모 월드의 렌더링 부하를 견디는 것을 목표로 하고 있습니다.
+사용자가 가상 자연환경을 구성할 수 있는 것을 목표로 하고 있습니다.
 
-현재 기초적인 렌더링 기능 구현 과정에 있습니다.
+현재 기초적인 렌더링 기능의 구현 과정에 있습니다.
 
 <br>
 
@@ -29,14 +29,14 @@ D3D12, Win32, C++을 이용하여 구현 중인 렌더링 엔진입니다.
 
 <!----------------------------------------------------------------------------------------------------------------------------------------------->
 ## 1. 스크린샷
-[시작 로딩]
-![시작 로딩 스크린샷](docs/screenshot1.png)
+[로딩]
+![로딩 스크린샷](docs/screenshot1.png)
 
-[메인 렌더링]
-![메인 렌더링 스크린샷](docs/screenshot2.png)
+[실행]
+![실행 스크린샷](docs/screenshot2.png)
 
-[메뉴 및 옵션]
-![메뉴 및 옵션 스크린샷](docs/screenshot3.png)
+[메뉴]
+![메뉴 스크린샷](docs/screenshot3.png)
 
 <br>
 
@@ -67,13 +67,13 @@ D3D12, Win32, C++을 이용하여 구현 중인 렌더링 엔진입니다.
 ### 2.2. 빌드 방법
 1. 리포지토리를 다운로드 받습니다.
 
-2. 다운 받은 리포지토리 디렉토리에 포함된 `PodoRenderer.slnx` 솔루션 파일을 더블 클릭합니다.
+2. 다운 받은 리포지토리 디렉토리에 포함된 `PodoNatureEngine.slnx` 솔루션 파일을 더블 클릭합니다.
 
 3. Visual Studio 상단의 구성(configuration)을 `Release` `x64`로 설정합니다.  
 
 4. Visual Studio 상단에서 빌드(B)의 솔루션 빌드(Ctrl+Shift+B)를 누릅니다.
 
-5. `PodoRenderer/OutDir`에서 `PodoRendererRelease64.exe` 이름의 파일이 생성되었다면 빌드에 성공한 것입니다.
+5. `PodoNatureEngine/OutDir`에서 `PodoNatureEngineRelease64.exe` 이름의 파일이 생성되었다면 빌드에 성공한 것입니다.
 
 <br>
 
@@ -81,11 +81,13 @@ D3D12, Win32, C++을 이용하여 구현 중인 렌더링 엔진입니다.
 
 
 ### 2.4. 실행 방법
-1. 위 빌드를 통해서 생성한 `PodoRendererRelease64.exe`를 더블 클릭하여 실행합니다.
+1. 위 빌드를 통해서 생성한 `PodoNatureEngineRelease64.exe`를 더블 클릭하여 실행합니다.
 
-2. 로딩이 완료되면 Click here to start 버튼이 중앙 하단에 나타납니다. 이를 눌러 눌러 렌더링을 시작합니다.
+2. 로딩이 완료되면 Click here to start 버튼이 중앙 하단에 나타납니다. 이를 눌러 시작합니다.
 
-3. 마우스 왼쪽 버튼을 누른 채로 마우스를 이동시키면 시야를 회전합니다. WASD 키보드로 카메라를 이동시킵니다.
+3. 마우스 우측 버튼을 누른 채로 마우스를 이동시키면 시야의 방향을 회전합니다. WASD 키보드로 시야의 위치를 이동시킵니다(미구현).
+
+4. 마우스 좌측 버튼을 통해 월드를 조작할 수 있습니다(미구현).
 
 4. 좌측 상단의 Menu 버튼을 누르면 메뉴와 함께 옵션이 나타납니다.
 
@@ -100,42 +102,52 @@ D3D12, Win32, C++을 이용하여 구현 중인 렌더링 엔진입니다.
 
 <!----------------------------------------------------------------------------------------------------------------------------------------------->
 ## 3. 주요 기능
-### 3.1. 렌더링 기능
-기하 그리기는 아직 구현되지 않았고, 간단히 렌더 타겟의 색상을 시간에 따라 진동시키는 루프만 작성되어있습니다.
+### 3.1. 조형 기능
+아직 구현되지 않았습니다.
 
 <br>
 
 
 
 
-### 3.2. 조작 기능
+### 3.2. 조명 기능
+아직 구현되지 않았습니다.
+
+<br>
+
+
+
+
+### 3.3. 조작 기능
 |입력|기능|
-|---------------------|---------------------------|
-|마우스 좌클릭 + 이동 |시야 회전(미구현)         |
-|창 끌기              |창 위치 이동               |
-|창 모서리 끌기       |창 크기 변화               |
-|키보드 WASD          |카메라 이동(미구현)       |
-|키보드 ESC           |메뉴<->렌더링 간 상태 전환 |
-|키보드 ALT+ENTER     |창모드 전환                |
-|키보드 ALT+F4        |종료                       |
+|---------------------|-------------------------|
+|마우스 좌클릭        |월드 조작                |
+|마우스 우클릭 + 이동 |시야 회전(미구현)        |
+|마우스 휠            |시야 앞뒤 이동(미구현)   |
+|키보드 WASD          |시야 이동(미구현)        |
+|키보드 ESC           |실행<->메뉴 간 상태 전환 |
+|키보드 ALT+ENTER     |창모드 전환              |
+|키보드 ALT+F4        |종료                     |
+|창 끌기              |창 위치 이동             |
+|창 모서리 끌기       |창 크기 변화             |
 
 <br>
 
 
 
 
-### 3.3. 옵션 기능
+### 3.4. 옵션 기능
 |옵션|설정값|
 |-----------------------|---------------------------------------------|
 |창모드                 |창모드 or 테두리 없는 전체 창모드            |
 |VSync                  |Off or On                                    |
 |Tearing                |피처 지원, VSync 여부에 따라 자동 적용       |
-|HDR(미완)              |Off or On                                    |
+|HDR(미구현)            |Off or On                                    |
 |레이 트레이싱(미구현)  |Off or On                                    |
 |메쉬 셰이더(미구현)    |Off or On                                    |
 |GUI 크기               |50% or 75% or 100% or 125% or 150%           |
 
-- 옵션은 `작업 디렉토리/SavedSettings.txt` 파일에 저장되고 복구됩니다.
+- 옵션은 `PodoNatureEngine/SavedSettings.txt` 파일에 저장되고 복구됩니다.
 
 <br>
 
@@ -155,7 +167,7 @@ D3D12, Win32, C++을 이용하여 구현 중인 렌더링 엔진입니다.
 |IDE                |Microsoft Visual Studio Community 2026 (64 - bit) 버전 18.8.2  |
 |플랫폼 도구 집합   |v145 for Microsoft C++ Build Tools                             |
 |컴파일러 버전      |x86용 Microsoft (R) C/C++ 최적화 컴파일러 버전 19.51.36252     |
-|구성               |`Profile` (= `Release` + `USE_PIX` 전처리기 상수 정의)         |
+|구성               |`Profile` (= `Release` 구성 + `USE_PIX` 전처리기 상수 정의)    |
 
 <br>
 
@@ -168,9 +180,7 @@ PIX의 Sequential Timing Capture을 이용하여 캡처를 진행합니다.
 
 특정 렌더링 구간이 평균적으로 얼마나 시간이 걸리는지를 Metrics의 Average Value를 통해 알아냅니다.
 
-측정은 풀스크린 상태에서 VSync를 끈 경우와 킨 경우로 나누어 각각 따로 캡처합니다.
-
-VSync를 끈 경우엔 Present로 인한 대기가 발생하지 않아 훨씬 많은 이벤트가 캡처되므로, 원활한 PIX의 타임 라인 분석을 위하여 캡처 시간을 단축하였습니다. 
+측정은 테두리 없는 전체 창모드 상태에서 VSync를 끈 경우와 킨 경우로 나누어 각각 따로 캡처합니다.
 
 캡처 시작 및 종료 버튼을 누르기 위해 어쩔 수 없이 PIX와 애플리케이션 사이의 화면 전환 시점이 캡처에 포함되어있습니다.
 
@@ -182,39 +192,57 @@ VSync를 끈 경우엔 Present로 인한 대기가 발생하지 않아 훨씬 �
 ### 4.3. 측정 결과
 [VSync Off]
 |구분|측정 구간|평균 시간|
-|---|-----------------------------------------------------------|------------:|
-|CPU|프레임 시간                                                |544,456 ns   |
-|   |├─ 이전 명령 완료 대기                                     |118,985 ns   |
-|   |└─ 씬 및 GUI 렌더                                          |424,774 ns   |
-|   |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ GUI 렌더|19,740 ns    |
-|GPU|씬 및 GUI 렌더                                             |41,383 ns    |
-|   |└─ GUI 렌더                                                |40,876 ns    |
+|---|-------------------------------------------------------------------------|------------:|
+|CPU|프레임 시간                                                              |450,894 ns   |
+|   |├─논-렌더 로직                                                           |283 ns       |
+|   |└─ 렌더 로직                                                             |450,397 ns   |
+|   |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 커맨드 리스트 초기화  |114,628 ns   |
+|   |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 자원 바인딩           |9,368 ns     |
+|   |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 씬 그리기             |320 ns       |
+|   |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ GUI 그리기            |13,990 ns    |
+|   |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 자원 언바인딩         |1,638 ns     |
+|   |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 커맨드 리스트 제출    |73,924 ns    |
+|   |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ 제시                  |235,626 ns   |
+|GPU|프레임 시간                                                              |39,156 ns    |
+|   |├─ 자원 바인딩                                                           |38,322 ns    |
+|   |├─ 씬 그리기                                                             |9 ns         |
+|   |├─ GUI 그리기                                                            |763 ns       |
+|   |└─ 자원 언바인딩                                                         |12 ns        |
 
-- 총 캡처 시간 : 4,763,70 ms
+- 총 캡처 시간 : 9,839,76 ms
 
-- GPU에 제출된 명령이 모두 수행될 때까지 CPU를 대기시키는 현 로직으로 인해 CPU의 프레임 시간에서 약 20%가 낭비되고 있습니다.
+- GPU의 명령이 모두 소진될 때까지 CPU를 대기시키는 현 로직으로 인해, 커맨드 리스트 초기화 과정에서 CPU의 프레임 시간에서 약 25%가 낭비되고 있습니다.
 
-- 기하 그리기가 구현되지 않고, 단순히 백버퍼의 색상을 시간에 따라 진동시키는 명령만 작성되어있으므로 GPU의 연산 대부분은 씬 렌더가 아니라 GUI 렌더에서 이뤄지고 있습니다.
+- 씬 그리기가 구현되지 않고 그에 앞선 자원 바인딩 과정에서 백버퍼의 색상을 초기화하는 것만이 작성되어있으므로, GPU의 연산 대부분은 자원 바인딩 과정에서 발생하고 있습니다.
 
 <br>
 
 [VSync On]  
 |구분|측정 구간|평균 시간|
-|---|-----------------------------------------------------------|------------:|
-|CPU|프레임 시간                                                |4,076,873 ns |
-|   |├─ 이전 명령 완료 대기                                     |3,396,390 ns |
-|   |└─ 씬 및 GUI 렌더                                          |679,104 ns   |
-|   |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ GUI 렌더|39,396 ns    |
-|GPU|씬 및 GUI 렌더                                             |91,838 ns    |
-|   |└─ GUI 렌더                                                |90,424 ns    |
+|---|-------------------------------------------------------------------------|------------:|
+|CPU|프레임 시간                                                              |4,161,893 ns |
+|   |├─논-렌더 로직                                                           |702 ns       |
+|   |└─ 렌더 로직                                                             |4,160,713 ns |
+|   |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 커맨드 리스트 초기화  |3,573,808 ns |
+|   |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 자원 바인딩           |24,925 ns    |
+|   |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 씬 그리기             |646 ns       |
+|   |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ GUI 그리기            |35,617 ns    |
+|   |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 자원 언바인딩         |3,192 ns     |
+|   |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 커맨드 리스트 제출    |153,068 ns   |
+|   |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ 제시                  |368,147 ns   |
+|GPU|프레임 시간                                                              |192,746 ns   |
+|   |├─ 자원 바인딩                                                           |190,587 ns   |
+|   |├─ 씬 그리기                                                             |7 ns         |
+|   |├─ GUI 그리기                                                            |2,083 ns     |
+|   |└─ 자원 언바인딩                                                         |10 ns        |
 
-- 총 캡처 시간 : 10,495,85 ms
+- 총 캡처 시간 : 8,973,71 ms
 
 - VSync를 켰으므로 명령큐에 제출된 Present 명령은 VSyncBlank 타이밍에 처리되고, 이 시점까지 `FlushCommandQueue(..)`가 다음 프레임의 렌더를 CPU가 준비하지 못하도록 블록하여, CPU의 "프레임 시간"과 "이전 명령 완료 대기" 시간이 늘어납니다.
 
 - 측정 환경의 모니터 주사율은 240Hz이므로 VSyncInterval은 $\frac{1}{240\ \mathrm{Hz}} \approx 4.17\ \mathrm{ms}$이고 이는 CPU의 "프레임 시간" 측정값과 거의 맞아 떨어집니다.
 
-- 그러나 VSync로 인한 CPU 블록이 왜 다른 구간과 GPU 구간을 두 배로 느리게 하는지는 원인을 파악 중에 있습니다.
+- 다만 VSync에 직접적인 영향을 받지 않는 연산들의 시간이 2배로 늘어난 이유는, VSync에 의한 대기로 인해 유휴 시간이 증가하여 운영체제가 더 적은 연산 자원을 애플리케이션에 할당하기 때문으로 추정하고 있습니다.
 
 <br>
 
@@ -294,11 +322,15 @@ D3D12에 관련한 여러 COM 인터페이스를 얻고, 피처 지원 여부를
 
 필요시 초기화 로직이 여러 번 호출될 수도 있도록, 각 초기화 하위 메소드는 기존에 획득한 인터페이스를 해제하는 과정을 먼저 수행하도록 구현하였습니다.
 
-실제 사용할 스왑체인을 생성하기에 앞서, HDR 포맷으로 생성한 스왑체인을 통해 HDR 색공간이 사용가능한지 여부를 조회하는 과정을 두었습니다.
+실제 사용할 스왑체인을 생성하기에 앞서 다음과 같은 과정을 거치도록 하였습니다.
 
-옵션 저장 파일에 저장된 값이 `Yes`이더라도 이번 실행 환경에서 해당 옵션이 지원되지 않으면 비활성화해야 하기에, HDR 옵션이 현재 환경에서 지원되는지가 확인된 직후에 옵션 저장 파일을 읽어들이도록 하였습니다.
+1. `InitFormatSupport()` : HDR 포맷으로 스왑 체인을 생성할 수 있는지 여부를 확인합니다.
 
-저장된 옵션을 읽어들여야 풀스크린 여부를 알아낼 수 있고 이를 통해 적절한 백버퍼 크기의 스왑 체인을 생성할 수 있기에, 실제로 사용할 스왑 체인 생성 전에 이처럼 옵션 저장 파일을 읽어들이고 이를 바탕으로 창모드를 설정하는 로직을 두었습니다.
+2. `InitHDRSwapChainSupport()` : HDR 포맷으로 생성한 스왑체인을 통해 HDR 색공간이 사용가능한지 여부를 조회합니다. 이 시점에서 HDR을 사용가능한지가 결정됩니다.
+
+3. `InitSavedOptions()` : 사용자가 이전에 저장한 화면 모드 옵션값과 HDR 제시 옵션값을 불러들입니다. 저장된 HDR 옵션값이 `Yes`이더라도 이번 실행 환경에서 해당 옵션이 지원되지 않으면 비활성화합니다.
+
+4. `InitScreenMode()` : 직전의 과정에서 알아낸 옵션값을 통해 창모드 혹은 테두리 없는 전체 창모드를 설정합니다. 이후 창의 크기에 맞춰 스왑체인의 백버퍼 크기가 결정됩니다.
 
 ```cpp
 void InitApp()
@@ -399,9 +431,9 @@ int RunMessageLoop()
 ### 5.5. 조작 로직
 일반적인 윈도우 메시지 처리 방식을 사용하고 있습니다.
 
-이를 통해 마우스 회전(미구현), 키보드 WASD 이동(미구현), ALT+ENTER 창모드 전환 단축키, 창 모서리 크기 변화, 창 위치 변화, ALT+F4 종료 단축키를 처리합니다.
+이를 통해 마우스 좌클릭 월드 조작(미구현), 마우스 우클릭 시야 회전(미구현), 마우스 휠 시야 앞뒤 이동(미구현), 키보드 WASD 시야 이동(미구현), ALT+ENTER 창모드 전환 단축키, ALT+F4 종료 단축키, 창 모서리 크기 변화, 창 위치 변화를 처리합니다.
 
-메뉴 전환 ESC 단축키는 윈도우 메시지를 직접 처리하지 않고 `ImGui::IsKeyPressed(..)`를 통해 처리하고 있습니다.
+메뉴 상태 전환 ESC 단축키는 윈도우 메시지를 직접 처리하지 않고 `ImGui::IsKeyPressed(..)`를 통해 처리하고 있습니다.
 
 ```cpp
 LRESULT Podo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -412,6 +444,8 @@ LRESULT Podo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_MOUSEMOVE:      //...
     case WM_LBUTTONDOWN:    //...
     case WM_LBUTTONUP:      //...
+    case WM_RBUTTONDOWN:    //...
+    case WM_RBUTTONUP:      //...
     case WM_MOUSEWHEEL:     //...
     case WM_KEYDOWN:        //...
     case WM_SYSKEYDOWN:     //...
@@ -452,7 +486,7 @@ LRESULT Podo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 
 ### 5.7. 자원
-아직 구현하지 않음
+아직 구현하지 않았습니다.
 
 <br>
 
@@ -460,7 +494,7 @@ LRESULT Podo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 
 ### 5.8. 바인딩
-아직 구현하지 않음
+아직 구현하지 않았습니다.
 
 <br>
 
@@ -468,7 +502,7 @@ LRESULT Podo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 
 ### 5.9. 셰이더
-아직 구현하지 않음
+아직 구현하지 않았습니다.
 
 <br>
 
@@ -476,7 +510,7 @@ LRESULT Podo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 
 ### 5.10. 파이프라인 상태 객체
-아직 구현하지 않음
+아직 구현하지 않았습니다.
 
 <br>
 
@@ -485,13 +519,8 @@ LRESULT Podo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 <!----------------------------------------------------------------------------------------------------------------------------------------------->
 ## 6. 구현 예정
-- **PIX 측정 추가**
-  - GPU 명령 대기 이벤트 측정하기
-
-<br>
-
-- **단일 PSO 렌더링**
-  - 외부 에셋 파일 로드
+- **단일 PSO 기능**
+  - 에셋 로드
   - 정점 버퍼, 인덱스 버퍼, 텍스처
   - 디폴트 힙 자원 업로드(`DirectX::ResourceUploadBatch`), CPU-GPU 동기화(`Fence`), 로딩 버튼 동기화
   - VBV, IBV, SRV 서술자
@@ -510,9 +539,8 @@ LRESULT Podo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 <br>
 
-- **단일 PSO 렌더링 최적화**
-  - 에셋 경량화             : 사전 생성 LOD, 뉴럴 셰이더
-  - 파일 입출력 최적화      : DirectStorage
+- **단일 PSO 최적화**
+  - 대상 경량화             : 사전 생성 LOD
   - 로딩 대상 선별          : 로딩 정책
   - 로딩 로직 최적화        : 로딩 전용 파일 포맷
   - 로딩과 렌더간 병렬화    : 파일 읽기용 CPU 스레드
@@ -526,22 +554,23 @@ LRESULT Podo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
   - 그리기 명령 횟수 축소   : 인스턴싱
   - 그리기 명령 병렬화      : 그리기 명령 분할 스레드
   - 그리기 명령 재사용      : 번들
-  - 셰이더 최적화           : 분기 수 조절, 로컬리티 개선, 뉴럴 셰이더 등
+  - 셰이더 최적화           : 분기 수 조절, 로컬리티 개선 등
 
 <br>
 
-- **다중 PSO 렌더링**
-  - 조형 PSO : 변위 매핑(지형, 수면), 스킨 애니메이션, 파티클
-  - 조명 PSO : 블랜딩, 정적 환경 매핑, 동적 환경 매핑, 그림자 매핑, SSAO, 레이 트레이싱
+- **다중 PSO 기능**
+  - 조형 PSO  : 변위 매핑(지면, 수면), 빌보딩(초목), 스킨 애니메이션, 파티클
+  - 조명 PSO  : 블랜딩, 정적 환경 매핑, 동적 환경 매핑, 그림자 매핑, SSAO, 복셀 광역 조명, 레이 트레이싱
 
 <br>
 
-- **다중 PSO 렌더링 최적화**
-  - 비교          : 포워드 렌더링 vs 포워드+ 렌더링 vs 지연 렌더링(+다중 렌더 타겟)
-  - 비교          : 네이티브 렌더링 vs VRS vs DirectSR
+- **다중 PSO 최적화**
+  - 비교          : 포워드 렌더링 vs 포워드+ 렌더링 vs 지연 렌더링
+  - 비교          : 네이티브 렌더링 vs VRS
   - 비교          : 사전 생성 LOD vs 기하 셰이더 런타임 LOD vs 테셀레이션 런타임 LOD vs 메쉬 셰이더 런타임 LOD
+  - 비교          : 정점 셰이더 빌보딩 vs 기하 셰이더 빌보딩 vs 메쉬 셰이더 빌보딩
   - 비교          : 단일 렌더 타겟 동적 입방체 그리기 vs 다중 렌더 타겟 어레이 동적 입방체 그리기(`WithoutGSEmulation`)
-  - 비교          : 컴퓨트 셰이더 파티클 vs 메쉬 셰이더 파티클 vs Work Graphs
+  - 비교          : 컴퓨트 셰이더 파티클 vs 메쉬 셰이더 파티클
   - PSO 내 최적화 : 루트 서명 직접화, 루트 서명 간접화, 루트 서명 정렬, 셰이더 최적화
   - PSO 간 최적화 : Placed Resource 공간 활용, 입력 슬롯 분할, PSO 변경 횟수 절약, 루트 서명 표준화
 
@@ -559,18 +588,18 @@ LRESULT Podo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 <!----------------------------------------------------------------------------------------------------------------------------------------------->
 ## 7. 구현 제외
-- **디바이스 소실 대응**  
-  렌더링 최적화라는 본 프로젝트의 핵심 목적에서 벗어나기에 제외하였습니다.
+- **디바이스 소실 감지**  
+  디바이스 소실을 감지하는 로직은 구현의 간단함을 위해 작성하지 않았습니다.
 
 <br>
 
 - **윈도우 DPI 설정값 자동 반영**  
-  본 렌더링 엔진은 DPI 설정값에 의한 윈도우의 자동 스케일링으로 화면이 훼손되지 않도록 DPI AWARENESS를 매니페스트에 명시하였습니다. 윈도우의 DPI 설정값은 GUI 크기에 반영하지 않고, 대신 옵션에서 GUI의 배율을 50%, 75%, 100%, 125%, 150% 중에서 선택할 수 있도록 하였습니다.
+  본 엔진은 DPI 설정값에 의한 윈도우의 자동 스케일링으로 화면이 훼손되지 않도록 DPI AWARENESS를 매니페스트에 명시하였습니다. 윈도우의 DPI 설정값은 GUI 크기에 반영하지 않고 대신 옵션에서 GUI의 배율을 50%, 75%, 100%, 125%, 150% 중에서 선택할 수 있도록 간단히 구현하였습니다.
 
 <br>
 
 - **심화 렌더링 기법**  
-  캐스케이드 셰도우 매핑, 복셀 광역 조명과 같은 심화 렌더링 기법은 추가 학습이 필요하기에 프로젝트 규모를 제한하고자 제외하였습니다.
+  캐스케이드 셰도우 매핑과 같은 심화 렌더링 기법은 추가 학습이 필요하기에 프로젝트 규모를 제한하고자 제외하였습니다.
 
 <br>
 
@@ -599,15 +628,15 @@ LRESULT Podo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
   - NuGet 패키지 관리 (Microsoft.Direct3D.D3D12)
   
 - 복원 위치
-  - `PodoRenderer\packages\Microsoft.Direct3D.D3D12.<버전명>`
+  - `PodoNatureEngine\packages\Microsoft.Direct3D.D3D12.<버전명>`
 
 - 라이선스 종류
   - MICROSOFT SOFTWARE LICENSE
   - MIT License
 
 - 라이선스 위치
-  - `PodoRenderer\packages\Microsoft.Direct3D.D3D12.<버전명>\LICENSE.txt`
-  - `PodoRenderer\packages\Microsoft.Direct3D.D3D12.<버전명>\LICENSE-CODE.txt`
+  - `PodoNatureEngine\packages\Microsoft.Direct3D.D3D12.<버전명>\LICENSE.txt`
+  - `PodoNatureEngine\packages\Microsoft.Direct3D.D3D12.<버전명>\LICENSE-CODE.txt`
 
 <br>
 
@@ -622,13 +651,13 @@ LRESULT Podo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
   - NuGet 패키지 관리 (directxtk12_desktop_win10)
 
 - 복원 위치
-  - `PodoRenderer\packages\directxtk12_desktop_win.<버전명>`
+  - `PodoNatureEngine\packages\directxtk12_desktop_win.<버전명>`
 
 - 라이선스 종류
   - MIT License
 
 - 라이선스 위치
-  - `PodoRenderer\packages\directxtk12_desktop_win10.<버전명>\docs\README.md` 내부 간접 링크
+  - `PodoNatureEngine\packages\directxtk12_desktop_win10.<버전명>\docs\README.md` 내부 간접 링크
   - `https://github.com/microsoft/DirectXTK12/blob/main/LICENSE`
 
 <br>
@@ -644,7 +673,7 @@ LRESULT Podo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
   - NuGet 패키지 관리 (Microsoft.Direct3D.DXC)
   
 - 복원 위치
-  - `PodoRenderer\packages\Microsoft.Direct3D.DXC.<버전명>`
+  - `PodoNatureEngine\packages\Microsoft.Direct3D.DXC.<버전명>`
 
 - 라이선스 종류
   - MIT License
@@ -652,9 +681,9 @@ LRESULT Podo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
   - MICROSOFT SOFTWARE LICENSE
 
 - 라이선스 위치
-  - `PodoRenderer\packages\Microsoft.Direct3D.DXC.<버전명>\LICENCE-MIT.txt`
-  - `PodoRenderer\packages\Microsoft.Direct3D.DXC.<버전명>\LICENSE-LLVM.txt`
-  - `PodoRenderer\packages\Microsoft.Direct3D.DXC.<버전명>\LICENSE-MS.txt`
+  - `PodoNatureEngine\packages\Microsoft.Direct3D.DXC.<버전명>\LICENCE-MIT.txt`
+  - `PodoNatureEngine\packages\Microsoft.Direct3D.DXC.<버전명>\LICENSE-LLVM.txt`
+  - `PodoNatureEngine\packages\Microsoft.Direct3D.DXC.<버전명>\LICENSE-MS.txt`
 
 <br>
 
@@ -669,13 +698,13 @@ LRESULT Podo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
   - NuGet 패키지 관리 (WinPixEventRuntime)
   
 - 복원 위치
-  - `PodoRenderer\packages\WinPixEventRuntime.<버전명>`
+  - `PodoNatureEngine\packages\WinPixEventRuntime.<버전명>`
 
 - 라이선스 종류
   - MIT License
 
 - 라이선스 위치
-  - `PodoRenderer\packages\WinPixEventRuntime.<버전명>\license.txt`
+  - `PodoNatureEngine\packages\WinPixEventRuntime.<버전명>\license.txt`
 
 <br>
 
@@ -687,8 +716,8 @@ LRESULT Podo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
   - 옵션 GUI 제공
 
 - 사용 방식
-  - 내부 직접 포함(`PodoRenderer\External\imgui`)
-  - 예제 수정 사용(`PodoRenderer\Code\Header\Alloc.h`)
+  - 내부 직접 포함(`PodoNatureEngine\External\imgui`)
+  - 예제 수정 사용(`PodoNatureEngine\Code\Header\Alloc.h`)
 
 - 원본 리포지토리
   - ocornut/imgui  
@@ -698,7 +727,7 @@ LRESULT Podo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
   - MIT License
 
 - 라이선스 위치
-  - `PodoRenderer\External\imgui\LICENSE.txt`
+  - `PodoNatureEngine\External\imgui\LICENSE.txt`
 
 <br>
 

@@ -56,6 +56,30 @@ LRESULT Podo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			return 0;
 		}
 
+		case WM_RBUTTONDOWN:
+		{
+			ImGuiIO& io = ImGui::GetIO();
+
+			if (io.WantCaptureMouse == false)
+			{
+				InputMouseRightButtonDown(wParam, lParam);
+			}
+
+			return 0;
+		}
+
+		case WM_RBUTTONUP:
+		{
+			ImGuiIO& io = ImGui::GetIO();
+
+			if (io.WantCaptureMouse == false)
+			{
+				InputMouseRightButtonUp(wParam, lParam);
+			}
+
+			return 0;
+		}
+
 		case WM_MOUSEWHEEL:
 		{
 			InputMouseWheelScroll(wParam, lParam);
@@ -234,6 +258,37 @@ void Podo::InputMouseLeftButtonUp(WPARAM wParam, LPARAM lParam)
 	unsigned int mouseMovedManhattanDist = abs(GET_X_LPARAM(lParam) - m_inputMouseClickedPositionClient.x) + abs(GET_Y_LPARAM(lParam) - m_inputMouseClickedPositionClient.y);
 	bool isDrag = (mouseMovedManhattanDist > m_inputDragThresholdDist);
 	MessageBoxW(m_hWnd, message.c_str(), isDrag ? L"좌측 마우스 드래그" : L"좌측 마우스 클릭", MB_OK);
+
+	m_inputIsClicked = false;
+}
+
+void Podo::InputMouseRightButtonDown(WPARAM wParam, LPARAM lParam)
+{
+	if (m_inputIsClicked == true)
+	{
+		return;
+	}
+
+	m_inputMouseClickedPositionClient.x = GET_X_LPARAM(lParam);
+	m_inputMouseClickedPositionClient.y = GET_Y_LPARAM(lParam);
+	m_inputIsClicked = true;
+}
+
+void Podo::InputMouseRightButtonUp(WPARAM wParam, LPARAM lParam)
+{
+	std::wstring message = std::format(
+		L"{}{} 시작 (x, y) = ({}, {}) \n 끝 (x, y) = ({}, {})",
+		wParam & MK_CONTROL ? L"[CTRL]" : L"",
+		wParam & MK_SHIFT ? L"[SHIFT]" : L"",
+		m_inputMouseClickedPositionClient.x,
+		m_inputMouseClickedPositionClient.y,
+		GET_X_LPARAM(lParam),
+		GET_Y_LPARAM(lParam)
+	);
+
+	unsigned int mouseMovedManhattanDist = abs(GET_X_LPARAM(lParam) - m_inputMouseClickedPositionClient.x) + abs(GET_Y_LPARAM(lParam) - m_inputMouseClickedPositionClient.y);
+	bool isDrag = (mouseMovedManhattanDist > m_inputDragThresholdDist);
+	MessageBoxW(m_hWnd, message.c_str(), isDrag ? L"우측 마우스 드래그" : L"우측 마우스 클릭", MB_OK);
 
 	m_inputIsClicked = false;
 }

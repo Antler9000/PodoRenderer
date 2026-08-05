@@ -1,11 +1,10 @@
 ﻿#pragma once
 #include "BaseApp.h"
-#include "EngineState.h"
+#include "State.h"
 #include "Option.h"
 #include "Timer.h"
 #include "Alloc.h"
 #include "imgui.h"
-#include <windows.h>
 #include <d3dx12_root_signature.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
@@ -13,8 +12,9 @@
 #include <dxgi.h>
 #include <dxgicommon.h>
 #include <dxgiformat.h>
-#include <pix3.h>
 #include <wrl/client.h>
+#include <pix3.h>
+#include <windows.h>
 #include <string>
 #include <fstream>
 
@@ -22,7 +22,7 @@ class Podo : public BaseApp<Podo>
 {
 public:
 
-	Podo() : BaseApp(L"Podo Renderer")
+	Podo() : BaseApp(L"Podo Nature Engine")
 	{
 
 	}
@@ -99,12 +99,21 @@ public:
 				}
 				else
 				{
-					PIXScopedEvent(PIX_COLOR_INDEX(0), L"CPU : Frame Time");
+					PIXScopedEvent(PIX_COLOR_INDEX(1), L"CPU : 1. Frame Time");
 
-					UpdateTimers();
-					UpdateWorld();
-					UpdateRender();
-					UpdateCaption();
+					{
+						PIXScopedEvent(PIX_COLOR_INDEX(2), L"CPU : 2. Non-Render Logic");
+
+						UpdateTimers();
+						UpdateCaption();
+						UpdateWorld();
+					}
+
+					{
+						PIXScopedEvent(PIX_COLOR_INDEX(3), L"CPU : 3. Render Logic");
+
+						UpdateRender();
+					}
 				}
 			}
 		}
@@ -151,16 +160,18 @@ private:
 	void UpdateWorld();
 	void UpdateRender();
 	void UpdateGUI();
-	void UpdateGUIEnterLoading(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
-	void UpdateGUIInRender(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void UpdateGUILoading(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
+	void UpdateGUIRuntime(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
 	void UpdateGUIMenu(ImGuiViewport* pImGuiViewPort, ImVec2 imGuiCenterPos);
 	void UpdateCaption();
 
 	void InputMouseMove(WPARAM wParam, LPARAM lParam);
-	void InputMouseWheelScroll(WPARAM wParam, LPARAM lParam);
-	void InputKeyboardDown(WPARAM wParam, LPARAM lParam);
 	void InputMouseLeftButtonDown(WPARAM wParam, LPARAM lParam);
 	void InputMouseLeftButtonUp(WPARAM wParam, LPARAM lParam);
+	void InputMouseRightButtonDown(WPARAM wParam, LPARAM lParam);
+	void InputMouseRightButtonUp(WPARAM wParam, LPARAM lParam);
+	void InputMouseWheelScroll(WPARAM wParam, LPARAM lParam);
+	void InputKeyboardDown(WPARAM wParam, LPARAM lParam);
 
 private:
 
@@ -243,8 +254,8 @@ private:
 	CD3DX12_CPU_DESCRIPTOR_HANDLE		m_descriptorHeapDSVCpuStartHandle;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSCpuStartHandleForImGui;
 	CD3DX12_GPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSGpuStartHandleForImGui;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSCpuStartHandleForRenderer;
-	CD3DX12_GPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSGpuStartHandleForRenderer;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSCpuStartHandleForRender;
+	CD3DX12_GPU_DESCRIPTOR_HANDLE		m_descriptorHeapCBVSRVUAVSGpuStartHandleForRender;
 
 	bool								m_imGuiInitialized									= false;
 	ImVec2								m_imGuiSpacingSize									= ImVec2(0.0f, 10.0f);
@@ -253,7 +264,7 @@ private:
 	ImVec2								m_imGuiLargeButtonSize								= ImVec2(360.0f, 40.0f);
 
 	bool								IsUpdateStopped() const								{ return (IsWorldStopped() && IsRenderStopped()); }
-	bool								IsWorldStopped() const								{ return (m_engineStatePresent != ENGINE_STATE_IN_RENDER); }
+	bool								IsWorldStopped() const								{ return (m_engineStatePresent != ENGINE_STATE_RUNTIME); }
 	bool								IsRenderStopped() const								{ return m_isWindowResizing || m_isWindowMoving || m_isWindowMinimized; }
 	bool								m_isWindowResizing									= false;
 	bool								m_isWindowMoving									= false;
@@ -265,7 +276,7 @@ private:
 	Timer								m_worldTimerTotal;
 	Timer								m_worldTimerFrame;
 
-	EngineState							m_engineStatePresent								= ENGINE_STATE_ENTER_LOADING;
+	EngineState							m_engineStatePresent								= ENGINE_STATE_LOADING;
 
 	void								InputReset()										{ m_inputMousePositionClient = { 0,0 }; m_inputMouseClickedPositionClient = { 0, 0 }; m_inputIsClicked = false; m_inputScrollDelta = 0; }
 	POINT								m_inputMousePositionClient							= { 0, 0 };
